@@ -20,13 +20,13 @@ def get_data(game):
 
 # ----------------------------------------------------------------------
 def get_maps(game):
-    """Get map images from: assets/maps/*"""
+    """Get map images from: project/assets/maps/*"""
     map_coor = {}
     for map_name, coordinates in map_coordinates:
         map_coor[map_name] = coordinates
 
-
-    for loc in glob('assets/maps/*'):
+    dir = game.project_dir + '/assets/maps/*'
+    for loc in glob(dir):
         name = basename(loc).lower()
 
         if name in map_coor:
@@ -38,7 +38,7 @@ def get_maps(game):
 def get_sound_effects(game):
     """Get sounds effects from assets directory, listed in configuration file"""
     for name, loc in sound_effects:
-        game.sounds[name] = pygame.mixer.Sound(loc)
+        game.sounds[name] = pygame.mixer.Sound(game.project_dir + '/' + loc)
         # Lower volume of all sounds. If you want different levels for each file, can do a check by name
         game.sounds[name].set_volume(.3)
 
@@ -54,7 +54,7 @@ def get_dialog_images(game):
     for name, loc, img_nums in dialog_image_sheets:
         # Load the character sheet:
         if loc:
-            image_sheet = pygame.image.load(loc).convert_alpha()
+            image_sheet = pygame.image.load(game.project_dir + '/' + loc).convert_alpha()
         else:
             image_sheet = []
 
@@ -77,14 +77,17 @@ def get_dialog_images(game):
 def get_portraits(game):
     """Get portraits/images from assets directory"""
 
-    for loc in glob('assets/portraits/*'):
+    dir = game.project_dir + '/assets/portraits/*'
+    for loc in glob(dir):
         name = basename(loc)
         game.portraits[name] = Portrait_Image(game, name, loc)
 
 
 def get_backgrounds(game):
     """Get backdrops from assets directory"""
-    for loc in glob('assets/backgrounds/*'):
+
+    dir = game.project_dir + '/assets/backgrounds/*'
+    for loc in glob(dir):
         name = basename(loc).lower()
         game.backgrounds[name] = pygame.image.load(loc).convert_alpha()
         # 30 added to width for screen shake
@@ -94,6 +97,7 @@ def get_backgrounds(game):
 def get_music(game):
     """Get music from assets folder"""
 
-    for loc in glob('assets/audio/music/*'):
+    dir = game.project_dir + '/assets/audio/music/*'
+    for loc in glob(dir):
         name = basename(loc).lower()
         game.music[name] = loc

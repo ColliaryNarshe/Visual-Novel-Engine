@@ -25,6 +25,7 @@ class Game(Transitions):
         self.win_height = self.WIN.get_height()
         self.current_chapter = starting_chapter
         self.current_scene = starting_scene
+        self.project_dir = project_dir
         project = import_module(project_dir + '.scene_list')
 
         self.current_menu = ''
