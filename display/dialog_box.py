@@ -17,8 +17,8 @@ class Dialog_Box(Text_Box):
         self.background_color = dialog_settings['bg_color']
         self.border_width = dialog_settings['border_width']
         self.border_color = dialog_settings['border_color']
-        self.surface = Surface(self.WIN, self.game, "10%", "75%", "80%", "20%", self.background_color, self.border_color, self.border_width)
-        self.img_surface =Surface(self.WIN, self.game, self.surface.x, self.surface.y, self.surface.height, self.surface.height, self.background_color, self.border_color, 2)
+        self.surface = Surface(self.WIN, self.game, dialog_settings['bottom_x'], dialog_settings['bottom_y'], "80%", "20%", self.background_color, self.border_color, self.border_width)
+        self.img_surface = Surface(self.WIN, self.game, self.surface.x, self.surface.y, self.surface.height, self.surface.height, self.background_color, self.border_color, 2)
 
         self.image_surface_on = True
         self.name_tag_y = dialog_settings['name_tag_y']
@@ -51,14 +51,14 @@ class Dialog_Box(Text_Box):
             self.max_lines = 1
 
 
-    def parse_quotes(self, dialog: list):
-        """Called from Scene via Game.display_dialog()
+    def parse_quotes(self, dialog: list, set_disabled):
+        """Called from scene -> Game.display_dialog()
            Dialog example: ['Arjen', 0, "Dialog text"]
            With question: ['Arjen', 0, "Question?", ['Yes', 'No']]"""
 
         # Clear the text at the start of each dialog, not at end in case chosen to keep dialog up
-
         self.surface.clear_text()
+
         # Set the name and create nametag surface
         self.name = dialog[0]
         if not self.name:
@@ -79,7 +79,7 @@ class Dialog_Box(Text_Box):
             dialog_copy = dialog[:-1]
 
             # Make the choice menu with menu items
-            self._update_dialog_choices(dialog[-1])
+            self._update_dialog_choices(dialog[-1], set_disabled)
 
         # Check if no image or no name given in parameters
         if type(dialog_copy[1]) == int and self.name and self.game.dialog_images[self.name]:
@@ -117,7 +117,7 @@ class Dialog_Box(Text_Box):
                 if len(dialog) == 4:
                     self.game.toggle_menu = True
                     self.game.current_menu = self.box_name
-                    self.game.menus[self.box_name].surface.hide_surface = False
+                    self.game.menus[self.box_name].bg_surface.hide_surface = False
                     self.surface.triangle = False
 
             # Wait for input:
@@ -147,21 +147,21 @@ class Dialog_Box(Text_Box):
         self.name_surface.display_text_list = [(name_render, name_render_rect)]
 
 
-    def _update_dialog_choices(self, choices: list):
+    def _update_dialog_choices(self, choices: list, set_disabled):
         """Create the surface and text for dialog choices"""
 
         # Convert to usable menu format (with T/F)
-        choices = self._convert_choices(choices)
+        choices = self._convert_choices(choices, set_disabled)
 
         self.game.menus[self.box_name].update_text(choices)
         self.game.menus[self.box_name].add_bg(padding=20, bg_color=self.background_color, border_color='Grey', border_width=5)
 
-        self.game.menus[self.box_name].surface.hide_surface = True
+        self.game.menus[self.box_name].bg_surface.hide_surface = True
 
 
     def display_dialog_box(self):
         """Called from game loop"""
-        # box:
+        # Box:
         self.surface.display_surface()
 
         # Picture:
@@ -189,7 +189,7 @@ class Dialog_Box(Text_Box):
             self.choice_box_x = self.surface.surface_rect.right - 25
             self.choice_box_y = self.surface.surface_rect.top + (self.surface.surface_rect.height // 4)
             self.game.create_menu(self.box_name, [['temp', True]], self.choice_box_x, self.choice_box_y, color=self.color, size=self.text_size, spacing=5)
-            self.game.menus[self.box_name].add_bg(padding=20, bg_color=background_color, border_color=border_color, border_width=5)
+            self.game.menus[self.box_name].add_bg(padding=20, bg_color=self.background_color, border_color=self.border_color, border_width=5)
 
             # Max lines, depending on height of dialog box, text, and spacing:
             self.max_lines = int((self.surface.height - (self.y_txt_padding * 1.5)) / self.text_height)
@@ -198,14 +198,26 @@ class Dialog_Box(Text_Box):
 
 
 # Extra-------------------------------------------
-    def move_dialog_up(self):
-        x, y = self.game._convert_percents_into_ints("10%", "8%")
-        self.reset_loc(x, y)
+    def move_dialog_up(self, x=None, y=None):
+        if x == None:
+            x = dialog_settings['top_x']
+        if y == None:
+            y = dialog_settings['top_y']
+
+        new_x, new_y = self.game._convert_percents_into_ints(x, y)
+
+        self.reset_loc(new_x, new_y)
 
 
-    def move_dialog_down(self):
-        x, y = self.game._convert_percents_into_ints("10%", "75%")
-        self.reset_loc(x, y)
+    def move_dialog_down(self, x=None, y=None):
+        if x == None:
+            x = dialog_settings['bottom_x']
+        if y == None:
+            y = dialog_settings['bottom_y']
+
+        new_x, new_y = self.game._convert_percents_into_ints(x, y)
+
+        self.reset_loc(new_x, new_y)
 
 
     def reset_loc(self, x, y):

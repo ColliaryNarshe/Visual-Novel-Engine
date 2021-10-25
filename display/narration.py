@@ -46,11 +46,11 @@ class Narration_Box(Text_Box):
         self.surface.display_surface()
 
 
-    def parse_narration(self, text, choices=[]):
-        """Called from scene."""
+    def parse_narration(self, text, choices=[], set_disabled=[]):
+        """Called from scene. set_disabled to set which choices are disabled"""
 
         # Convert choices into lists with T/F:
-        choices = self._convert_choices(choices)
+        choices = self._convert_choices(choices, set_disabled)
 
         # Wrap text lines to proper width:
         full_text = self._format_text_wrap(text)

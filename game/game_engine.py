@@ -156,8 +156,9 @@ class Game(Transitions):
 
 
     # Dialog Box -------------------------------------
-    def display_dialog(self, dialog: list=[], remove=True):
-        """Gets the list of dialog quotes and feeds them to dialog_box"""
+    def display_dialog(self, dialog: list=[], remove=True, set_disabled=[]):
+        """Gets the list of dialog quotes and feeds them to dialog_box
+            set_disabled must be same length as choices list"""
         # [['Arjen', 0, "Dialog"], ['Eilan', 0, "Okay."]] Number is image idx
 
         self.toggle_dialog = True
@@ -165,7 +166,7 @@ class Game(Transitions):
 
         for quote in dialog:
             # Display the text:
-            self.dialog_box.parse_quotes(quote)
+            self.dialog_box.parse_quotes(quote, set_disabled)
 
             # Draw background to clear old (nametag different sizes)
             self.display_background()
@@ -209,11 +210,11 @@ class Game(Transitions):
 
 
     # Narration Box -----------------------------------
-    def display_narration(self, text, choices=[], remove=True):
+    def display_narration(self, text, choices=[], remove=True, set_disabled=[]):
         self.toggle_narration = True
         self.menu_cursor_loc = -1
 
-        self.narration_box.parse_narration(text, choices)
+        self.narration_box.parse_narration(text, choices, set_disabled)
 
         if remove:
             self.narration_box.remove_narration_box()
@@ -270,7 +271,41 @@ class Game(Transitions):
     # Images / Portraits ---------------------------------
     def _display_portraits(self):
         """For game loop"""
-        for portrait in self.portraits_to_blit.values():
+
+        # Using a copy of dictionary to remove any animations from dict that go off screen:
+        for key, portrait in dict(self.portraits_to_blit).items():
+
+            # move_in_left animation, with no game pause:
+            if portrait.in_left_animating:
+                portrait.x += portrait.speed
+                if portrait.x >= portrait.left_in:
+                    pygame.event.clear()  # Clear input made during animation
+                    portrait.in_left_animating = False
+
+            # move_in_right animation, with no game pause:
+            if portrait.in_right_animating:
+                portrait.x -= portrait.speed
+                if portrait.x <= portrait.right_in:
+                    pygame.event.clear()
+                    portrait.in_right_animating = False
+
+            # Move_out_left animation, with no game pause:
+            if portrait.out_left_animating:
+                portrait.x -= portrait.speed
+                if portrait.x + portrait.width < 0:
+                    pygame.event.clear()
+                    portrait.out_left_animating = False
+                    self.portraits_to_blit[key].remove()  # Remove from original dict
+
+            # Move_out_right animation, with no game pause:
+            if portrait.out_right_animating:
+                portrait.x += portrait.speed
+                if portrait.x > portrait.game.win_width:
+                    pygame.event.clear()
+                    portrait.out_right_animating = False
+                    self.portraits_to_blit[key].remove()  # Remove from original dict
+
+            # Blit the portraits:
             self.WIN.blit(portrait.image, (portrait.x + self.x_offset, portrait.y))
 
 
@@ -327,14 +362,17 @@ class Game(Transitions):
 
 
     # Music ----------------------------------
-    def play_song(self, song_name='', volume=None, stop=False, pause=False, unpause=False, repetition=-1):
+    def play_song(self, song_name='', volume=None, fade=False, stop=False, pause=False, unpause=False, repetition=-1):
         """Given a song location will play song. Called from scenes"""
 
         if song_name:
             pygame.mixer.music.load(self.music[song_name.lower()])
             pygame.mixer.music.play(repetition)
+
         if volume:
             pygame.mixer.music.set_volume(volume)  # Float 0.0-1.0
+        elif fade:
+            pygame.mixer.music.fadeout(fade)
         elif stop:
             pygame.mixer.music.stop()
             pygame.mixer.music.unload()

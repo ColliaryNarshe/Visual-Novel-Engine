@@ -17,8 +17,14 @@ class Portrait_Image:
         # To place the image right above dialog
         self.dialog_height = int(self.game.win_height * .75) - self.height
 
+        # These four used in/out animation without a pause (animated in main loop)
+        self.in_left_animating = False
+        self.in_right_animating = False
+        self.out_left_animating = False
+        self.out_right_animating = False
+
         self.speed = 30
-        # self.surface = None
+
 
     def blit_image(self, x=0, y=0, dialog=''):
         """Add image to game dictionary to be blit in loop
@@ -59,54 +65,75 @@ class Portrait_Image:
         else:
             self.y = y
 
-    def move_in_left(self, y='default'):
+
+    def move_in_left(self, y='default', pause=True):
         if y == 'default':
             y = self.dialog_height
 
         self.blit_image(-self.width - self.speed, y)
-        while True:
-            self.x += self.speed
-            self.game.game_loop_input(1)
 
-            if self.x >= self.left_in:
-                break
+        if pause:
+            while True:
+                self.x += self.speed
+                self.game.game_loop_input(1)
 
+                if self.x >= self.left_in:
+                    pygame.event.clear()  # Clear input made during animation
+                    break
 
-    def move_out_left(self):
-        while True:
-            self.x -= self.speed
-            self.game.game_loop_input(1)
-
-            if self.x + self.width < 0:
-                break
-
-        self.remove()
+        else:
+            self.in_left_animating = True
 
 
-    def move_in_right(self, y='default'):
+    def move_out_left(self, pause=True):
+        if pause:
+            while True:
+                self.x -= self.speed
+                self.game.game_loop_input(1)
+
+                if self.x + self.width < 0:
+                    pygame.event.clear()  # Clear input made during animation
+                    break
+
+            self.remove()
+
+        else:
+            self.out_left_animating = True
+
+
+    def move_in_right(self, y='default', pause=True):
         if y == 'default':
             y = self.dialog_height
 
         # Put the image off screen
         self.blit_image(self.game.win_width + self.speed, y)
 
-        while True:
-            self.x -= self.speed
-            self.game.game_loop_input(1)
+        if pause:
+            while True:
+                self.x -= self.speed
+                self.game.game_loop_input(1)
 
-            if self.x <= self.right_in:
-                break
+                if self.x <= self.right_in:
+                    pygame.event.clear()
+                    break
+        else:
+            self.in_right_animating = True
 
 
-    def move_out_right(self):
-        while True:
-            self.x += self.speed
-            self.game.game_loop_input(1)
+    def move_out_right(self, pause=True):
+        if pause:
+            while True:
+                self.x += self.speed
+                self.game.game_loop_input(1)
 
-            if self.x > self.game.win_width:
-                break
+                if self.x > self.game.win_width:
+                    pygame.event.clear()
+                    break
 
-        self.remove()
+            self.remove()
+
+        else:
+            self.out_right_animating = True
 
 
     def upscale(self, percent: int):

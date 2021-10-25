@@ -1,10 +1,11 @@
 import pygame
 from display.surfaces import Surface
+from game.input_check import menu_move_down
 
 class Menu:
     def __init__(self, game, name, items: list, x, y, color="Black", font_size=40, spacing=10, align='left', bold=0, font='georgia'):
         self.game = game
-        self.surface = None
+        self.bg_surface = None
         self.items = items  # [["One", True], ["Two", True]]
         self.items_rendered = []
         self.name = name
@@ -84,23 +85,20 @@ class Menu:
                     # Disabled text and adjust cursor
                     self.game.WIN.blit(disabled, rect)
                     if idx == self.game.menu_cursor_loc:
-                        self.game.menu_move_down()
+                        menu_move_down(self.game)
 
 
     def disable_enable_menu_item(self, idx):
         self.items[idx][1] = not self.items[idx][1]
 
 
-    def show_menu(self, remove=True):
-        """Used for sole menu (like title screen) not dialog (narration?)
-           This is used to call from outside (scenes->game->here) to start flag & gameloop
+    def show_menu(self, remove=True, default=0):
+        """Used for sole menu (like title screen) not dialog/narration
+           This is used to call from outside (scenes->game->show_menu) to start flag & gameloop
            Can't call display_menu() directly because game_loop_input loops into itself."""
 
-        # self.input_return = False
-
-        # Get len to use with cursor moving (and also flag to display surface)
         self.game.toggle_menu = True
-        self.game.menu_cursor_loc = 0
+        self.game.menu_cursor_loc = default
         self.game.current_menu = self.name
         self.display_menu()
         self.game.game_loop_input()
@@ -118,63 +116,65 @@ class Menu:
     def display_menu(self):
         """Used in mainloop"""
         # display the dialog choice box, but only at end of typing:
-        if not self.game.menus[self.game.dialog_box.box_name].surface.hide_surface and self.game.current_menu == self.game.dialog_box.box_name:
-            if self.surface:
-                self.surface.display_surface()
+        if not self.game.menus[self.game.dialog_box.box_name].bg_surface.hide_surface and self.game.current_menu == self.game.dialog_box.box_name:
+            if self.bg_surface:
+                self.bg_surface.display_surface()
 
             self._draw_text()
 
         # Display Menu (or narration once it's done)
         if self.game.current_menu != self.game.dialog_box.box_name:
-            if self.surface:
-                self.surface.display_surface()
+            if self.bg_surface:
+                self.bg_surface.display_surface()
 
             self._draw_text()
 
 
-    def move_in_left(self, remove=True):
+    def move_in_left(self, remove=True, default=0):
         self.game.toggle_menu = True
+        self.game.menu_cursor_loc = default
         self.game.current_menu = self.name
 
         # Save original position
         x_original = self.x
-        if self.surface:
-            x_surface_original = self.surface.x
+        if self.bg_surface:
+            x_surface_original = self.bg_surface.x
 
         # Put text off screen, adjusting for alignment: (surface and text blit from different parts of rect [left right etc]):
         if self.align == 'right':
             self.x = 0 - self.pad_right - self.speed
-            if self.surface:
-                self.surface.x = -self.surface.width - self.speed
+            if self.bg_surface:
+                self.bg_surface.x = -self.bg_surface.width - self.speed
 
         if self.align == 'center' or self.align == 'horizontal-center':
             self.x = -self.total_width // 2 - self.pad_right - self.speed
-            if self.surface:
-                self.surface.x = -self.surface.width - self.speed
+            if self.bg_surface:
+                self.bg_surface.x = -self.bg_surface.width - self.speed
 
         else: # align='left' or 'horizontal'
             self.x = -self.total_width - self.pad_right - self.speed
-            if self.surface:
-                self.surface.x = -self.surface.width - self.speed
+            if self.bg_surface:
+                self.bg_surface.x = -self.bg_surface.width - self.speed
 
         while True:
             # Increase text coordinates
             self.x += self.speed
             self._create_menu() # Render the rects and add to list
 
-            if self.surface:
-                # Increase surface coordinates
-                self.surface.x += self.speed
-                self.surface.reset_location()
+            if self.bg_surface:
+                # Increase bg_surface coordinates
+                self.bg_surface.x += self.speed
+                self.bg_surface.reset_location()
 
             if self.x >= x_original:
                 self.x = x_original
                 self._create_menu()
 
-                if self.surface:
-                    self.surface.x = x_surface_original
-                    self.surface.reset_location()
+                if self.bg_surface:
+                    self.bg_surface.x = x_surface_original
+                    self.bg_surface.reset_location()
 
+                pygame.event.clear()  # In case of input during animation, clear events
                 self.game.game_loop_input()
                 if remove:
                     self.remove_menu()
@@ -183,30 +183,31 @@ class Menu:
             self.game.game_loop_input(1)
 
 
-    def move_in_right(self, remove=True):
+    def move_in_right(self, remove=True, default=0):
         self.game.toggle_menu = True
+        self.game.menu_cursor_loc = default
         self.game.current_menu = self.name
 
         # Save original position
         x_original = self.x
-        if self.surface:
-            x_surface_original = self.surface.x
+        if self.bg_surface:
+            x_surface_original = self.bg_surface.x
 
         # Put text off screen, adjusting for alignment (surface and text blit from different parts of rect [left right etc]):
         if self.align == 'right':
             self.x = self.game.win_width + self.total_width + self.pad_left + self.speed
-            if self.surface:
-                self.surface.x = self.game.win_width + self.speed
+            if self.bg_surface:
+                self.bg_surface.x = self.game.win_width + self.speed
 
         elif self.align == 'center' or self.align == 'horizontal-center':
             self.x = self.game.win_width + self.total_width // 2 + self.pad_left + self.speed
-            if self.surface:
-                self.surface.x = self.game.win_width + self.speed
+            if self.bg_surface:
+                self.bg_surface.x = self.game.win_width + self.speed
 
         else: # align='left' or 'horizontal'
             self.x = self.game.win_width + self.pad_left + self.speed
-            if self.surface:
-                self.surface.x = self.game.win_width + self.speed
+            if self.bg_surface:
+                self.bg_surface.x = self.game.win_width + self.speed
 
 
         while True:
@@ -214,18 +215,18 @@ class Menu:
             self.x -= self.speed
             self._create_menu() # Render the rects and add to list
 
-            if self.surface:
-                # Increase surface coordinates
-                self.surface.x -= self.speed
-                self.surface.reset_location()
+            if self.bg_surface:
+                # Increase bg_surface coordinates
+                self.bg_surface.x -= self.speed
+                self.bg_surface.reset_location()
 
             if self.x <= x_original:
                 self.x = x_original
                 self._create_menu()
 
-                if self.surface:
-                    self.surface.x = x_surface_original
-                    self.surface.reset_location()
+                if self.bg_surface:
+                    self.bg_surface.x = x_surface_original
+                    self.bg_surface.reset_location()
 
                 self.game.game_loop_input()
                 if remove:
@@ -243,8 +244,6 @@ class Menu:
             self.pad_left, self.pad_top, self.pad_right, self.pad_bottom = padding
         else:
             self.pad_left, self.pad_top, self.pad_right, self.pad_bottom = padding, padding, padding, padding
-
-        # self.padding = padding  # Can delete this, once you adjust the others
 
         # Text is measured differently depending on how it's aligned
         if self.align == 'right':
@@ -264,7 +263,7 @@ class Menu:
         surf_width = self.total_width + (self.pad_left + self.pad_right)
         surf_height = self.total_height + (self.pad_top + self.pad_bottom)
 
-        self.surface =Surface(self.game.WIN, self.game, surf_x, surf_y, surf_width, surf_height, bg_color, border_color, border_width, transparent)
+        self.bg_surface = Surface(self.game.WIN, self.game, surf_x, surf_y, surf_width, surf_height, bg_color, border_color, border_width, transparent)
 
 
     def _get_text_dimensions(self):

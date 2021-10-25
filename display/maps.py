@@ -8,34 +8,40 @@ class Map:
         self.map_loc = map_loc
         self.coordinates = OrderedDict()  # coordinates from configuration.py
         self.rects = {}  # location rects
-        self.dot_color = map_settings['dot_color']
-        self.dot_highlight_color = map_settings['dot_highlight_color']
-        self.padding = self.game.win_width * map_settings['padding_multiplier'] #.025
 
         if coordinates:
             # ['pub', (x,y), None, True]
             for loc_name, coordinates, padding, show in coordinates:
                 self.coordinates[loc_name] = [coordinates, padding, show]
 
+        self.config_map(
+            map_settings['x_y'], map_settings['width_height'],
+            map_settings['border_color'], map_settings['border_width'],
+            map_settings['dot_radius'], map_settings['dot_color'],
+            map_settings['dot_highlight_color'], map_settings['padding_multiplier'],
+            map_settings['txt_color'], map_settings['txt_bg'],
+            map_settings['font_size'], map_settings['bold'],
+            map_settings['font'])
 
-        self.config_map(txt_color=map_settings['txt_color'], txt_bg=map_settings['txt_bg'], font_size=map_settings['font_size'], dot_radius=map_settings['dot_radius'])
 
+    def config_map(self, x_y=None, width_height=None, border_color=None, border_width=None, dot_radius=None, dot_color=None, highlight=None, pad_multi=None, txt_color=None, txt_bg=None, font_size=None, bold=None, font=None):
+        if x_y:
+            self.x, self.y = self.game._convert_percents_into_ints(x_y[0], x_y[1])
+        if width_height:
+            self.width, self.height = self.game._convert_percents_into_ints(width_height[0], width_height[1])
+        if border_color: self.border_color = border_color
+        if border_width: self.border_width = border_width
+        if dot_radius: self.dot_radius = dot_radius
+        if dot_color: self.dot_color = dot_color
+        if highlight: self.dot_highlight_color = highlight
+        if pad_multi: self.padding = self.game.win_width * pad_multi
+        if txt_color: self.txt_color = txt_color
+        if txt_bg: self.txt_bg = txt_bg
+        if font_size: self.font_size = font_size
+        if bold: self.bold = bold
+        if font: self.font_name = font
 
-    def config_map(self, x=15, y=15, width="80%", height="80%", border_color='Grey', border_width=4, txt_color='white', txt_bg='Black', font_size=50, font='georgia', bold=1, dot_radius=30, pad_multi=None):
-        self.txt_color = txt_color
-        self.txt_bg = txt_bg
-        self.font_size = font_size
-        self.bold = bold
-        self.font_name = font
         self.font = pygame.font.SysFont(self.font_name, self.font_size, self.bold)
-        self.dot_radius = dot_radius
-
-        if pad_multi:
-            self.padding = self.game.win_width * pad_multi
-        self.x, self.y = self.game._convert_percents_into_ints(x, y)
-        self.width, self.height = self.game._convert_percents_into_ints(width, height)
-        self.border_width = border_width
-        self.border_color = border_color
 
         self.map_image = pygame.image.load(self.map_loc).convert_alpha()
         self.map_image = pygame.transform.scale(self.map_image, (self.width, self.height))

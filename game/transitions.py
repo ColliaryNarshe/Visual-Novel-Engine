@@ -1,3 +1,5 @@
+import pygame
+
 class Transitions:
     """Game transitions inherited by game_engine"""
 
@@ -18,6 +20,7 @@ class Transitions:
         self.WIN.blit(self.transition_surface, (0,0))
         self.fade_timer += 6
         if self.fade_timer > 255:
+            pygame.event.clear()
             self.fade_timer = 255
 
 
@@ -37,6 +40,7 @@ class Transitions:
         self.WIN.blit(self.transition_surface, (0,0))
         self.fade_timer -= 6
         if self.fade_timer < 0:
+            pygame.event.clear()
             self.fade_timer = 0
 
 
@@ -56,6 +60,7 @@ class Transitions:
         self.WIN.blit(self.transition_surface, (self.fade_timer, 0))
         self.fade_timer -= 30
         if self.fade_timer < 0:
+            pygame.event.clear()
             self.fade_timer = 0
 
 
@@ -75,14 +80,21 @@ class Transitions:
         self.WIN.blit(self.transition_surface, (self.fade_timer, 0))
         self.fade_timer += 30
         if self.fade_timer > 0:
+            pygame.event.clear()
             self.fade_timer = 0
 
 
-    def shake_screen(self):
+    def shake_screen(self, pause=False):
         """Called from scenes"""
-        self.screen_shaking = True
+
         self.shake_speed = 15
         self.shake_time = 0
+        self.screen_shaking = True
+
+        if pause:
+            while self.screen_shaking:
+                self.game_loop_input(1)
+
 
 
     def _shake_handle(self):

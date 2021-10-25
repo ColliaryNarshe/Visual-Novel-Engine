@@ -7,7 +7,7 @@ WIN = pygame.display.set_mode((1100,700))
 pygame.display.set_caption("Visual Novel Engine")
 
 # Project:
-project_dir = "demo"
+project_dir = "test_project"
 starting_chapter = "chapter1"
 starting_scene = 'title'
 

@@ -1,5 +1,3 @@
-from game.characters import Character
-
 # Variables to use during game.
 flag_variables = {
     'variable1': False,
@@ -20,7 +18,12 @@ dialog_settings = {
     'bg_color': 'DarkBlue',
     'border_color': 'Grey',
     'border_width': 5,
-    'highlight_color': 'Red'
+    'highlight_color': 'Red',
+    # Default positions:
+    'bottom_x': '10%',
+    'bottom_y': '75%',
+    'top_x': '10%',
+    'top_y': '8%',
 }
 
 narration_settings = {
@@ -38,13 +41,19 @@ narration_settings = {
 }
 
 map_settings = {
+    'x_y': (15, 15),
+    'width_height': ('80%', '80%'),
+    'border_color': 'grey',
+    'border_width': 4,
     'dot_radius': 15,
     'dot_color': 'LightBlue',
     'dot_highlight_color': 'Red',
     'padding_multiplier': .025,  # Multiplied by window width (can edit individually in coordinates)
     'txt_color': 'White',
     'txt_bg': 'Black',
-    'font_size': 50
+    'font_size': 50,
+    'bold': True,
+    'font': 'Georgia'
 }
 
 # Change the default sound effects here. Can also add more to call during script.
@@ -84,7 +93,8 @@ map_coordinates = [
 ]
 
 # Characters (not yet implemented)
-game_characters = {
-    'Arjen': Character(preset='knight'),
-    'Eilan': Character(preset='archer')
-}
+game_characters = [
+    {'name': 'Arjen', 'preset': 'knight'},
+    {'name': 'Eilan', 'preset': 'archer'},
+    {'name': 'Julia', 'hp': 500, 'mp': 500, 'attack': 500, 'defense': 500, 'speed': 500, 'target': 500}
+]

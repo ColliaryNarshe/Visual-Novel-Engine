@@ -120,6 +120,12 @@ class Text_Box:
         new_color = ''
         # Split by width:
         for line in split_text:
+
+            # This allows multiple newlines, otherwise textwrap will remove it
+            if not line:
+                line = " "
+
+            # Check for color marker at start of string:
             for name in pygame_colors:
                 if line.lower().startswith(name+':'):
                     new_color = name
@@ -129,25 +135,32 @@ class Text_Box:
                 colored = textwrap.wrap(line[color_len:], wrap_num, drop_whitespace=True, initial_indent=ind)
                 for line in colored:
                     wrapped_text.append(new_color+':' + line.strip())
+
             else:
-                wrapped_text += textwrap.wrap(line, wrap_num, drop_whitespace=True, initial_indent=ind)
+                wrapped_text += textwrap.wrap(line, wrap_num, drop_whitespace=False, initial_indent=ind)
 
         return wrapped_text
 
 
-    def _convert_choices(self, choices):
+    def _convert_choices(self, choices, set_disabled):
         """If given a list of ["one", "two"]
            Converts into: [["one", True], ["two", True]]
-           Which can be used by Menu class"""
+           which can be used by Menu class"""
 
         if choices:
             if not isinstance(choices[-1], list):
                 new_list = []
-                for choice in choices:
-                    new_list.append([choice, 'True'])
+                if not set_disabled:
+                    for choice in choices:
+                        new_list.append([choice, 'True'])
+                else:
+                    for choice, disabled in zip(choices, set_disabled):
+                        new_list.append([choice, disabled])
 
                 return new_list
-            return choices
+
+            else:
+                return choices
 
 
     def _check_color_change(self, line):

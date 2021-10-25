@@ -4,7 +4,7 @@ This is just a fun project while I learn pygame. Create a simple visual novel. Y
 
 To create your own visual novel, use the list of commands in documentation.pdf and look at the script.py files in the demo directory for an example of how they're used.
 
-Note: This is a very early work in progress, and does not yet even have a save function.
+Note: This is an early work in progress.
 
 ---
 #### FAQ
