@@ -1,6 +1,7 @@
 import pygame
 from glob import glob
-from os.path import basename
+from os.path import basename, exists
+import json
 
 from configuration import map_coordinates, sound_effects, dialog_image_sheets
 
@@ -10,12 +11,27 @@ from display.portraits import Portrait_Image
 
 def get_data(game):
     """Gets assets and adds them to game"""
+    get_saves(game)
     get_maps(game)
     get_sound_effects(game)
     get_dialog_images(game)
     get_portraits(game)
     get_backgrounds(game)
     get_music(game)
+
+
+def get_saves(game):
+    """Loads list of saved files from json and adds to game.saves"""
+    dir = game.project_dir + "/saves.json"
+
+    try:
+        if exists(game.project_dir + "/saves.json"):
+            with open(dir, 'r') as f:
+                game.saves = json.load(f)
+
+    except Exception as e:
+        game.saves = {}
+        print(e, "JSONDecodeError: Problem loading json file.")
 
 
 # ----------------------------------------------------------------------

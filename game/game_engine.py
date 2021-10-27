@@ -1,5 +1,6 @@
 import pygame
 from sys import exit
+import json
 from importlib import import_module
 
 from display.dialog_box import Dialog_Box
@@ -10,7 +11,7 @@ from display.surfaces import Surface
 from game.input_check import check_input as ch_in
 from game.transitions import Transitions
 from configuration import flag_variables
-from game.get_data import get_data
+from game.get_data import get_data, get_saves
 
 from game.coordinator import Coordinator
 
@@ -60,6 +61,8 @@ class Game(Transitions):
         self.backdrop_text = []
         self.portraits_to_blit = {}
         self.map_loc_list = []  # Used to cycle locations in input_check
+
+        self.saves = {}  # Saved games
 
         # Used by user to create variables (To use later when saving):
         self.flag_vars = {**flag_variables}
@@ -416,20 +419,76 @@ class Game(Transitions):
         self.input_return = ch_in(self)
 
 
+    def save(self, index:int = None, name:str = None) -> ".json file":
+        """Save chapter, scene, and flags to json file
+           index = save index"""
+
+        if index != None:
+            new_name = 'Save ' + str(index)
+        elif name:
+            new_name = name
+        else:
+            # Find first unused name: Save 0, Save 1, etc.
+            for idx, saved_name in enumerate(sorted(self.saves)):
+                if 'Save ' + str(idx) != saved_name:
+                    new_name = 'Save ' + str(idx)
+                    break
+            else:
+                idx = len(self.saves)
+                new_name = 'Save ' + str(idx)
+
+        self.saves[new_name] = {
+            "chapter": self.current_chapter,
+            "scene": self.current_scene,
+            "flags": self.flag_vars
+        }
+
+        self._write_json_file()
+
+
+    def _write_json_file(self):
+
+        dir = self.project_dir + "/saves.json"
+
+        with open(dir, 'w') as f:
+            json.dump(self.saves, f, indent=4)
+
+        # Reload the updated save file
+        get_saves(self)
+
+
+    def get_saved_file_names(self, menu=True) -> list:
+        """Returns name list of saved files to scenes, in menu format:
+           [['save 0', True], ['save 1', True]]"""
+
+        if not self.saves:
+            return {}
+
+        save_names = []
+        for key in sorted(self.saves):
+            if menu:
+                save_names.append([key, True])
+            else:
+                save_names.append(key)
+
+        return save_names
+
+
+    def load_saved_game(self, save_name):
+        self.current_chapter = self.saves[save_name]['chapter']
+        self.current_scene = self.saves[save_name]['scene']
+        self.flag_vars = self.saves[save_name]['flags']
+
+
+    def delete_saved_game(self, save_name):
+        del self.saves[save_name]
+        self._write_json_file()
+
+
     def exit_game(self):
         # Can put a warning window here, maybe auto save function:
         pygame.quit()
         exit()
-
-
-
-
-
-
-
-
-
-
 
 
 
