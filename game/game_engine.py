@@ -1,5 +1,6 @@
 import pygame
 from sys import exit
+from os import remove as os_remove
 import json
 from importlib import import_module
 
@@ -481,12 +482,20 @@ class Game(Transitions):
 
 
     def delete_saved_game(self, save_name):
-        del self.saves[save_name]
-        self._write_json_file()
+        try:
+            del self.saves[save_name]
+        except KeyError:
+            print(f"Save file '{save_name}' not found.")
+            return
+
+        if not self.saves:
+            os_remove(self.project_dir + "/saves.json")
+        else:
+            self._write_json_file()
 
 
     def exit_game(self):
-        # Can put a warning window here, maybe auto save function:
+        # Can put a warning window here, maybe auto save function
         pygame.quit()
         exit()
 
