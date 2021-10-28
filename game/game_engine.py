@@ -422,7 +422,8 @@ class Game(Transitions):
 
     def save(self, index:int = None, name:str = None) -> ".json file":
         """Save chapter, scene, and flags to json file
-           index = save index"""
+           If no arguments given, creates new save with unused index #
+           index/name: specify specific index/name, possibly replacing an older save."""
 
         if index != None:
             new_name = 'Save ' + str(index)
@@ -448,19 +449,20 @@ class Game(Transitions):
 
 
     def _write_json_file(self):
+        """Save self.saves to json file"""
 
         dir = self.project_dir + "/saves.json"
 
         with open(dir, 'w') as f:
             json.dump(self.saves, f, indent=4)
 
-        # Reload the updated save file
-        get_saves(self)
-
 
     def get_saved_file_names(self, menu=True) -> list:
-        """Returns name list of saved files to scenes, in menu format:
-           [['save 0', True], ['save 1', True]]"""
+        """
+        Returns name list of saved files to scenes, in menu format:
+        [['save 0', True], ['save 1', True]]
+        menu=False returns: ['save 0', 'save 1']
+        """
 
         if not self.saves:
             return {}
@@ -476,12 +478,15 @@ class Game(Transitions):
 
 
     def load_saved_game(self, save_name):
+        """Sets chapter, scene, and flags"""
         self.current_chapter = self.saves[save_name]['chapter']
         self.current_scene = self.saves[save_name]['scene']
         self.flag_vars = self.saves[save_name]['flags']
 
 
     def delete_saved_game(self, save_name):
+        """Removes given save from self.saves and updates json file.
+           If there are no saves, deletes json file."""
         try:
             del self.saves[save_name]
         except KeyError:
