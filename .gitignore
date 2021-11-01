@@ -1,3 +1,6 @@
 __pycache__/
 test_project/
 changelog.txt
+
+game/characters.py
+game/battle.py
