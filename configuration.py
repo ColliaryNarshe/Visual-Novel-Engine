@@ -48,7 +48,7 @@ map_settings = {
     'dot_radius': 15,
     'dot_color': 'LightBlue',
     'dot_highlight_color': 'Red',
-    'padding_multiplier': .025,  # Multiplied by window width (can edit individually in coordinates)
+    'padding_multiplier': .025,  # Multiplied by window width (can edit individually in map_coordinates)
     'txt_color': 'White',
     'txt_bg': 'Black',
     'font_size': 50,
@@ -79,8 +79,8 @@ dialog_image_sheets = [
 map_coordinates = [
     ['city1.png',
         [
-        # Name, coordinates, padding, show/hide
-        # Padding is clickable area (pixels from center) None=default (defined above as padding_multiplier)
+        # [Name, coordinates, padding, show/hide]
+        # Padding is clickable area (pixels from center) not dot size. None=default (defined above as padding_multiplier)
         ['Entrance', (0.585, 0.829), None, True],
         ['Inn', (0.473, 0.671), None, True],
         ['Market', (0.356, 0.621), None, True],

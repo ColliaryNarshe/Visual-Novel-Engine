@@ -24,14 +24,14 @@ class TitleScreen:
         self.game.menus['start_screen'].show_menu(remove=False)
 
 
-        if self.game.input_return == 0:
+        if self.game.input_return == 0:  # Start
             self.game.play_song(fade=2000)
             self.game.fade_out()
             self.game.menus['start_screen'].remove_menu()
             self.game.clear_bg_text()
             self.game.change_scene('chapter1', 'scene1')
 
-        if self.game.input_return == 1:
+        elif self.game.input_return == 1:  # Options
             self.game.play_song(fade=1000)
             self.game.slide_left('sean-musil-field.jpg')
             self.game.menus['start_screen'].remove_menu()
@@ -39,7 +39,7 @@ class TitleScreen:
             self.game.change_scene('chapter2', 'scene1')
             self.game.play_song('Fantasy_Motion(cut).mp3', 0.4)
 
-        if self.game.input_return == 2:
+        elif self.game.input_return == 2:  # Quit
             self.game.exit_game()
 
 
