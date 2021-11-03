@@ -1,10 +1,8 @@
 #### Visual Novel Engine
 <br>
-This is just a fun project while I learn pygame. Create a simple visual novel. You can run main.py to see a short demo of some of the options.
+Create a simple visual novel using images, music, dialog boxes, narration text, in-game choices, menus, with some basic animations and scene transitions. You can run main.py to see a short demo of some of the options.
 
 To create your own visual novel, use the list of commands in documentation.pdf and look at the script.py files in the demo directory for an example of how they're used.
-
-Note: This is an early work in progress.
 
 ---
 #### FAQ
