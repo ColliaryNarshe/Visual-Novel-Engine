@@ -1,23 +1,19 @@
 import pygame
 
 class Surface:
-    def __init__(self, WIN, game, x, y, width, height, bg_color="White", border_color="Black", border_width=0, transparent=0):
+    def __init__(self, WIN, game, x, y, width, height, bg_color="White", border_color="Black", border_width=0, transparency=255):
         """Coordinates and dimensions can be given in integers or a string with percent sign "22.5%" """
         self.WIN = WIN
         self.game = game
-        self.configure(x, y, width, height, bg_color, border_color, border_width)
+        self.configure(x, y, width, height, bg_color, border_color, border_width, transparency)
         self.image = None
         # self.font = pygame.font.SysFont('georgia', 50, 0)
         self.display_text_list = [] # list of tuples, pygame text font and rect, for specific texts
         self.hide_surface = False
         self.triangle = False
 
-        # if transparent:
-        #     self.surface.set_alpha(transparent)
-        #     self.surface.set_colorkey("black")
 
-
-    def configure(self, x=None, y=None, width=None, height=None, background_color=None, border_color=None, border_width=None):
+    def configure(self, x=None, y=None, width=None, height=None, background_color=None, border_color=None, border_width=None, transparency=None):
         """Used to edit the surface"""
         if x == None:
             x = self.x
@@ -33,16 +29,18 @@ class Surface:
             border_color = self.border_color
         if border_width == None:
             border_width = self.border_width
+        if transparency == None:
+            transparency = self.transparency
 
         self.x, self.y = self.game._convert_percents_into_ints(x, y)
         self.width, self.height = self.game._convert_percents_into_ints(width, height)
-        self.background_color = background_color
-        self.border_color = border_color
+        self.background_color = self.game.convert_color(background_color, transparency)
+        self.border_color = self.game.convert_color(border_color, transparency)
         self.border_width = border_width
+        self.transparency = transparency
 
         # Text surface/rect:
-        self.surface = pygame.Surface((self.width, self.height))
-        # self.surface.set_alpha(50)
+        self.surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
         self.surface_rect = self.surface.get_rect(topleft=(self.x, self.y))
 
 
@@ -58,9 +56,6 @@ class Surface:
 
 
     def display_surface(self):
-        # see_through = pygame.Rect(self.surface_rect.x, self.surface_rect.y, self.surface_rect.width, self.surface_rect.height)
-        # pygame.draw.rect(self.surface, (0,0,0,50), see_through)
-
         if not self.hide_surface:
             if self.game.screen_shaking:
                 self.surface_rect.x = self.x + self.game.x_offset
@@ -69,7 +64,8 @@ class Surface:
 
             # Blit surface
             self.WIN.blit(self.surface, self.surface_rect)
-            self.surface.fill(self.background_color)
+            if self.background_color:
+                self.surface.fill(self.background_color)
             if self.border_width:
                 pygame.draw.rect(self.WIN, self.border_color, self.surface_rect, self.border_width)
 

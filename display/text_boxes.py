@@ -14,13 +14,14 @@ class Text_Box:
             typing = True
             while typing:
                 # To make sure screen is loaded already, some kind of lag before writing characters one at a time.
-                self.game.game_loop_input(2)
+                self.game.game_loop_input(2, tick=False)
 
                 for num, line in enumerate(text):
                     rendering = ''  # The characters of incomplete line to render
                     y = self.y_txt_padding + (self.text_height * num)  # new lines
 
                     color, line = self._check_color_change(line)
+                    line = line.strip()
 
                     for char in line:
                         pygame.time.delay(self.typing_speed)
@@ -49,11 +50,13 @@ class Text_Box:
                         # Add the text to surface
                         self.surface.display_text_list.append((rendered_text, text_rect))
 
-                        # Display surfaces: Dialog box has more things to display (nametag, img)
-                        if type(self).__name__ == "Narration_Box":
-                            self.display_narration_box()
-                        else:
-                            self.display_dialog_box()
+                        # # Display surfaces: Dialog box has more things to display (nametag, img)
+                        # if type(self).__name__ == "Narration_Box":
+                        #     self.display_narration_box()
+                        # else:
+                        #     self.display_dialog_box()
+                        self.game.game_loop_input(1, tick=False)
+
 
                         self.surface.display_text_list.pop() # Remove incomplete text line
 
@@ -82,6 +85,7 @@ class Text_Box:
     def _display_without_typing(self, text):
         """Displays text in box all at once"""
         for num, line in enumerate(text):
+            line = line.strip()
             y = self.y_txt_padding + (self.text_height * num)  # new lines
 
             color, line = self._check_color_change(line)

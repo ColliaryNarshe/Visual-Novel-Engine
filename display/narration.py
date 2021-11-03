@@ -9,7 +9,7 @@ class Narration_Box(Text_Box):
     # Inherits methods but no need for super()
     def __init__(self, game):
         self.game = game
-        self.surface =Surface(self.game.WIN, self.game, "15%", "5%", "70%", "70%", narration_settings['bg_color'], narration_settings['border_color'], narration_settings['border_width'])
+        self.surface = Surface(self.game.WIN, self.game, "15%", "5%", "70%", "70%", narration_settings['bg_color'], narration_settings['border_color'], narration_settings['border_width'], narration_settings['box_transparency'])
 
         # Fonts:
         self.change_font(narration_settings['font_name'], narration_settings['font_size'], narration_settings['font_color'])
@@ -87,8 +87,8 @@ class Narration_Box(Text_Box):
         self.game.toggle_menu = False
 
 
-    def config_surface(self, x=None, y=None, width=None, height=None, background_color=None, border_color=None, border_width=None):
-        self.surface.configure(x, y, width, height, background_color, border_color, border_width)
+    def config_surface(self, x=None, y=None, width=None, height=None, background_color=None, border_color=None, border_width=None, transparency=None):
+        self.surface.configure(x, y, width, height, background_color, border_color, border_width, transparency)
 
         # Max lines, depending on height of dialog box, text, and spacing:
         self.max_lines = ((self.surface.height - (self.y_txt_padding * 2)) // self.text_height) - 1

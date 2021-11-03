@@ -35,7 +35,7 @@ class Game(Transitions):
         self.input_return = None
         self.menu_cursor_loc = -1
 
-        self.transition_surface = pygame.Surface((self.win_width, self.win_height), flags=pygame.SRCALPHA)
+        self.transition_surface = pygame.Surface((self.win_width, self.win_height))
 
         # Menu scrolling speed (used in input_check.py):
         self.speed = self.FPS // 6  # Higher total value is slower
@@ -82,8 +82,13 @@ class Game(Transitions):
 
         # Display:
         self.menus = {}
+
         self.dialog_boxes = {'default': Dialog_Box(self, 'default_dialog')}
-        self.dialog_box = self.dialog_boxes['default']  # Create a function to change it and method for newly created ones are added to dict
+        self.create_dialog('default2', name_tag_y=-65, transparency=200, choice_menu_x=0, choice_menu_y=0, x='15%', width='70%')
+        self.dialog_boxes['default2'].img_surface.background_color = None
+        self.dialog_boxes['default2'].y_txt_padding = 15
+        self.dialog_box = self.dialog_boxes['default']
+
         self.narration_box = Narration_Box(self)
         self.toggle_coordinator = False
         self.coordinator = Coordinator(self, self.maps)
@@ -94,7 +99,7 @@ class Game(Transitions):
         project.get_scenes(self)
 
 
-    def game_loop_input(self, no_input=False):
+    def game_loop_input(self, no_input=False, tick=True):
         """Main game loop.
            Take a number for no_input which equals repetions which can be used as
            a pause of sorts, or to refresh the screen (without input)"""
@@ -102,7 +107,8 @@ class Game(Transitions):
         rep_max = 0
 
         while True:
-            clock.tick(self.FPS)
+            if tick:
+                clock.tick(self.FPS)
 
             # Check for keyboard input, returns None to game.input_return
             if not no_input:
@@ -181,32 +187,14 @@ class Game(Transitions):
 
     def create_dialog(self, name, x=None, y=None, width=None, height=None,
                       background_color=None, border_color=None, border_width=None,
-                      name_tag_x=None, name_tag_y=None):
+                      transparency=None, name_tag_x=None, name_tag_y=None,
+                      choice_menu_x=None, choice_menu_y=None):
 
 
         self.dialog_boxes[name] = Dialog_Box(self, name)
 
-        if not x:
-            x = self.dialog_boxes[name].surface.x
-        if not y:
-            y = self.dialog_boxes[name].surface.y
-        if not width:
-            width = self.dialog_boxes[name].surface.width
-        if not height:
-            height = self.dialog_boxes[name].surface.height
-        if not background_color:
-            background_color = self.dialog_boxes[name].background_color
-        if not border_color:
-            border_color = self.dialog_boxes[name].border_color
-        if not border_width:
-            border_width = self.dialog_boxes[name].border_width
-        if not name_tag_x:
-            name_tag_x = self.dialog_boxes[name].name_tag_x
-        if not name_tag_y:
-            name_tag_y = self.dialog_boxes[name].name_tag_y
-
-        self.dialog_boxes[name].config_surface(x, y, width, height, background_color, border_color, border_width)
-        self.dialog_boxes[name].config_surface(x=name_tag_x, y=name_tag_y, name_tag=True)
+        self.dialog_boxes[name].config_surface(x, y, width, height, background_color, border_color, border_width, transparency, choice_menu_x, choice_menu_y)
+        self.dialog_boxes[name].config_surface(x=name_tag_x, y=name_tag_y, transparency=transparency, name_tag=True)
 
 
     def switch_dialog(self, name):
@@ -497,6 +485,20 @@ class Game(Transitions):
             os_remove(self.project_dir + "/saves.json")
         else:
             self._write_json_file()
+
+
+    def convert_color(self, color: 'str or tuple', transparency) -> tuple:
+        """Converts a color text into tuple and changes transparency"""
+
+        if not color:
+            return None
+
+        if isinstance(color, tuple):
+            return (color[0], color[1], color[2], transparency)
+
+        for name, value in pygame.color.THECOLORS.items():
+            if color.lower() == name:
+                return (value[0], value[1], value[2], transparency)
 
 
     def exit_game(self):

@@ -13,9 +13,10 @@ dialog_settings = {
     'name_tag_y': -45,  # 0 aligns with top of box
     'name_tag_x_multiplier': .5,  # Multiplied by width of character portrait.
     'y_txt_padding': 30,  # Space between top of box and first line of text.
-    'x_txt_padding': 50,
+    'x_txt_padding': 30,
     'font_color': 'White',
     'bg_color': 'DarkBlue',
+    'box_transparency': 255, # 0-255
     'border_color': 'Grey',
     'border_width': 5,
     'highlight_color': 'Red',
@@ -23,7 +24,9 @@ dialog_settings = {
     'bottom_x': '10%',
     'bottom_y': '75%',
     'top_x': '10%',
-    'top_y': '8%',
+    'top_y': '10%',
+    'choice_menu_x': -40,  # From right edge of dialog box
+    'choice_menu_y': .20  # Multiplier for height of dialog box then added from top
 }
 
 narration_settings = {
@@ -35,6 +38,7 @@ narration_settings = {
     'y_txt_padding': 30,
     'font_color': 'White',
     'bg_color': 'Black',
+    'box_transparency': 150, # 0-255
     'border_color': 'Grey',
     'border_width': 5,
     'highlight_color': 'Red'

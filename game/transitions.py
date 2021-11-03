@@ -16,9 +16,10 @@ class Transitions:
     def fade_out_transition(self):
         """Called from game loop"""
         # To fade screen to black
-        self.transition_surface.fill((0,0,0,self.fade_timer))
+        self.transition_surface.fill((0,0,0))
+        self.transition_surface.set_alpha(self.fade_timer)
         self.WIN.blit(self.transition_surface, (0,0))
-        self.fade_timer += 6
+        self.fade_timer += 5
         if self.fade_timer > 255:
             pygame.event.clear()
             self.fade_timer = 255
@@ -36,9 +37,10 @@ class Transitions:
     def fade_in_transition(self):
         """Called from game loop"""
         # To fade screen to black
-        self.transition_surface.fill((0,0,0,self.fade_timer))
+        self.transition_surface.fill((0,0,0))
+        self.transition_surface.set_alpha(self.fade_timer)
         self.WIN.blit(self.transition_surface, (0,0))
-        self.fade_timer -= 6
+        self.fade_timer -= 5
         if self.fade_timer < 0:
             pygame.event.clear()
             self.fade_timer = 0

@@ -236,7 +236,7 @@ class Menu:
             self.game.game_loop_input(1)
 
 
-    def add_bg(self, padding=20, bg_color='white', border_color='Grey', border_width=0, transparent=0):
+    def add_bg(self, padding=20, bg_color='white', border_color='Grey', border_width=0, transparency=255):
         """Add a colored surface behind text for background
            Padding can but an int or a list of ints: [left, top, right, bottom]"""
 
@@ -263,7 +263,7 @@ class Menu:
         surf_width = self.total_width + (self.pad_left + self.pad_right)
         surf_height = self.total_height + (self.pad_top + self.pad_bottom)
 
-        self.bg_surface = Surface(self.game.WIN, self.game, surf_x, surf_y, surf_width, surf_height, bg_color, border_color, border_width, transparent)
+        self.bg_surface = Surface(self.game.WIN, self.game, surf_x, surf_y, surf_width, surf_height, bg_color, border_color, border_width, transparency)
 
 
     def _get_text_dimensions(self):
