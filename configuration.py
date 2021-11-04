@@ -52,9 +52,11 @@ map_settings = {
     'dot_radius': 15,
     'dot_color': 'LightBlue',
     'dot_highlight_color': 'Red',
+    'dot_transparency': 200,
     'padding_multiplier': .025,  # Multiplied by window width (can edit individually in map_coordinates)
     'txt_color': 'White',
     'txt_bg': 'Black',
+    'txt_bg_transparency': 150,
     'font_size': 50,
     'bold': True,
     'font': 'Georgia'
@@ -85,13 +87,13 @@ map_coordinates = [
         [
         # [Name, coordinates, padding, show/hide]
         # Padding is clickable area (pixels from center) not dot size. None=default (defined above as padding_multiplier)
-        ['Entrance', (0.585, 0.829), None, True],
-        ['Inn', (0.473, 0.671), None, True],
-        ['Market', (0.356, 0.621), None, True],
-        ['Pub', (0.27, 0.525), None, True],
-        ['Castle', (0.336, 0.498), None, True],
         ['Slums', (0.153, 0.318), None, True],
         ['Bridge', (0.637, 0.425), None, True],
+        ['Castle', (0.336, 0.498), None, True],
+        ['Pub', (0.27, 0.525), None, True],
+        ['Market', (0.356, 0.621), None, True],
+        ['Inn', (0.473, 0.671), None, True],
+        ['Entrance', (0.575, 0.820), None, True]
         ]
     ]
 ]

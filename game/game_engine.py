@@ -85,7 +85,6 @@ class Game(Transitions):
 
         self.dialog_boxes = {'default': Dialog_Box(self, 'default_dialog')}
         self.create_dialog('default2', name_tag_y=-65, transparency=200, choice_menu_x=0, choice_menu_y=0, x='15%', width='70%')
-        self.dialog_boxes['default2'].img_surface.background_color = None
         self.dialog_boxes['default2'].y_txt_padding = 15
         self.dialog_box = self.dialog_boxes['default']
 
@@ -492,6 +491,9 @@ class Game(Transitions):
 
         if not color:
             return None
+
+        if transparency == None:
+            transparency = 255
 
         if isinstance(color, tuple):
             return (color[0], color[1], color[2], transparency)

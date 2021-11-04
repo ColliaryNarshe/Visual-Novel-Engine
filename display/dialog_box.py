@@ -22,7 +22,7 @@ class Dialog_Box(Text_Box):
         self.surface = Surface(self.WIN, self.game, dialog_settings['bottom_x'], dialog_settings['bottom_y'], "80%", "20%", dialog_settings['bg_color'], dialog_settings['border_color'], self.border_width, dialog_settings['box_transparency'])
 
         # Image Surface
-        self.img_surface = Surface(self.WIN, self.game, self.surface.x, self.surface.y, self.surface.height, self.surface.height, dialog_settings['bg_color'], dialog_settings['border_color'], 2, dialog_settings['box_transparency'])
+        self.img_surface = Surface(self.WIN, self.game, self.surface.x, self.surface.y, self.surface.height, self.surface.height, 0, dialog_settings['border_color'], 2, dialog_settings['box_transparency'])
         self.image_surface_on = True
         self.name_tag_y = dialog_settings['name_tag_y']
         self.name_tag_x = self.surface.surface_rect.height * dialog_settings['name_tag_x_multiplier']
@@ -197,7 +197,7 @@ class Dialog_Box(Text_Box):
             self.surface.configure(x, y, width, height, background_color, border_color, border_width, transparency)
 
             # Image surface:
-            self.img_surface.configure(x, y, height, height, background_color, border_color, 2, transparency)
+            self.img_surface.configure(x, y, height, height, 0, border_color, 2, transparency)
 
             # Create Menu:
             if choice_menu_x != None:
@@ -212,7 +212,6 @@ class Dialog_Box(Text_Box):
             self.max_lines = int((self.surface.height - (self.y_txt_padding * 1.5)) / self.text_height)
             if not self.max_lines:
                 self.max_lines = 1
-
 
 
 # Extra-------------------------------------------

@@ -10,6 +10,8 @@ class Transitions:
         while self.fade_timer < 255:
             self.game_loop_input(1)
         self.game_loop_input(5)
+        self.transition_surface.set_alpha(255)
+        self.fade_timer = 255
         self.toggle_fade_out = False
 
 
@@ -22,7 +24,6 @@ class Transitions:
         self.fade_timer += 5
         if self.fade_timer > 255:
             pygame.event.clear()
-            self.fade_timer = 255
 
 
     def fade_in(self):
@@ -31,6 +32,8 @@ class Transitions:
         self.fade_timer = 255
         while self.fade_timer > 0:
             self.game_loop_input(1)
+        self.transition_surface.set_alpha(255)
+        pygame.event.clear()
         self.toggle_fade_in = False
 
 
@@ -42,7 +45,6 @@ class Transitions:
         self.WIN.blit(self.transition_surface, (0,0))
         self.fade_timer -= 5
         if self.fade_timer < 0:
-            pygame.event.clear()
             self.fade_timer = 0
 
 
