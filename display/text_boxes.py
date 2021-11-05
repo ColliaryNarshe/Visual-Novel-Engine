@@ -32,7 +32,10 @@ class Text_Box:
                                 if event.key == pygame.K_RETURN:
                                     text_rect = self._display_without_typing(text)
                                     typing = False
-                                    break
+
+                            elif event.type == pygame.MOUSEBUTTONUP:
+                                text_rect = self._display_without_typing(text)
+                                typing = False
 
                         if not typing:
                             break
@@ -50,17 +53,9 @@ class Text_Box:
                         # Add the text to surface
                         self.surface.display_text_list.append((rendered_text, text_rect))
 
-                        # # Display surfaces: Dialog box has more things to display (nametag, img)
-                        # if type(self).__name__ == "Narration_Box":
-                        #     self.display_narration_box()
-                        # else:
-                        #     self.display_dialog_box()
                         self.game.game_loop_input(1, tick=False)
 
-
                         self.surface.display_text_list.pop() # Remove incomplete text line
-
-                        pygame.display.update(self.surface.surface_rect)
 
                     # With completed line, add to be rendered and short pause before next line
                     else:

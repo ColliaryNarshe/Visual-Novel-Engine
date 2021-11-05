@@ -44,13 +44,14 @@ def check_input(game):
         if game.toggle_menu:
             pressed = check_menu_mouse(game, event)
             if pressed:
+                game.sounds['selected'].play()
                 game.toggle_menu = False
                 return game.menu_cursor_loc
 
         # Other mouse checks
         if event.type == pygame.MOUSEBUTTONUP:
-            # Click to continue dialog or narration
-            if game.toggle_dialog or game.toggle_narration:
+            # Click to continue dialog or narration, but not when there's a menu
+            if (game.toggle_dialog or game.toggle_narration) and not game.toggle_menu:
                 return game.menu_cursor_loc
 
             # Coordinator click
@@ -96,19 +97,19 @@ def check_menu_mouse(game, event):
     for idx, (_, _, _, rect, _) in enumerate(game.menus[game.current_menu].items_rendered):
 
         # Change color when hovering:
-        if rect.collidepoint(pygame.mouse.get_pos()):
+        if rect.collidepoint(pygame.mouse.get_pos()) and game.menus[game.current_menu].items[idx][1]:
             if game.menu_cursor_loc != idx:
                 game.sounds['menu_sound'].play()
                 game.menu_cursor_loc = idx
 
-        if event.type == pygame.MOUSEBUTTONUP:
-            return True
+            if event.type == pygame.MOUSEBUTTONUP:
+                return True
 
 
 def reset_mouse_cursor(game):
     """Moves the mouse cursor if hovering over menu. Used when arrow keys are used
        to not interfere with input."""
-       
+
     for idx, (_, _, _, rect, _) in enumerate(game.menus[game.current_menu].items_rendered):
         if rect.collidepoint(pygame.mouse.get_pos()):
             pygame.mouse.set_pos([0, 0])
@@ -147,11 +148,6 @@ def check_map_input(game, event):
 def map_arrow_down(game):
     global map_cursor_active
 
-    # Get the list of locations for current map:
-    # for map in game.map_loc_list:
-    #     if map[0] == game.current_map:
-    #         map_locations = map[1]
-
     if map_cursor_active:  # if mouse is already hovering over a location
         pygame.mouse.set_pos([0, 0])
         # Reset highlight colored locations
@@ -185,11 +181,6 @@ def map_arrow_down(game):
 
 def map_arrow_up(game):
     global map_cursor_active
-
-    # Get the list of locations for current map:
-    for map in map_coordinates:
-        if map[0] == game.current_map:
-            map_locations = map[1]
 
     # if mouse is already hovering over a location, reset locations and move cursor
     if map_cursor_active:

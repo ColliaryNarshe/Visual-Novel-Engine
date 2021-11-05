@@ -54,7 +54,7 @@ class Dialog_Box(Text_Box):
             self.max_lines = 1
 
 
-    def parse_quotes(self, dialog: list, set_disabled):
+    def parse_quote(self, dialog: list, set_disabled):
         """Called from scene -> Game.display_dialog()
            Dialog example: ['Arjen', 0, "Dialog text"]
            With question: ['Arjen', 0, "Question?", ['Yes', 'No']]"""
@@ -125,12 +125,11 @@ class Dialog_Box(Text_Box):
 
             # Wait for input:
             self.game.game_loop_input()
-            self.toggle_menu = False
+            self.game.toggle_menu = False
             self.surface.triangle = False
             # Clear the text from character's surface, but not if last one (for keeping txt on screen)
             if idx + 1 != display_times:
                 self.surface.clear_text()
-
 
         self.image_surface_on = True
 

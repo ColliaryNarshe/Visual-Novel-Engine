@@ -175,8 +175,7 @@ class Game(Transitions):
 
         for quote in dialog:
             # Display the text:
-            self.dialog_box.parse_quotes(quote, set_disabled)
-
+            self.dialog_box.parse_quote(quote, set_disabled)
             # Draw background to clear old (nametag different sizes)
             self.display_background()
 
