@@ -1,5 +1,6 @@
 import pygame
 from configuration import pygame_colors
+from configuration import narration_settings
 import textwrap
 
 class Text_Box:
@@ -21,7 +22,6 @@ class Text_Box:
                     y = self.y_txt_padding + (self.text_height * num)  # new lines
 
                     color, line = self._check_color_change(line)
-                    line = line.strip()
 
                     for char in line:
                         pygame.time.delay(self.typing_speed)
@@ -80,7 +80,6 @@ class Text_Box:
     def _display_without_typing(self, text):
         """Displays text in box all at once"""
         for num, line in enumerate(text):
-            line = line.strip()
             y = self.y_txt_padding + (self.text_height * num)  # new lines
 
             color, line = self._check_color_change(line)
@@ -101,13 +100,13 @@ class Text_Box:
 
         # Calculate wrap by using width of text and box:
         if self.image_surface_on:  # For Dialog Box with character image
-            wrap_num = int((self.surface.width - self.img_surface.width - (self.x_txt_padding * 2)) / self.text_width)
+            wrap_num = self.wrap_num - int(self.img_surface.width / self.text_width)
         else:
-            wrap_num = int((self.surface.width - (self.x_txt_padding * 2)) / self.text_width)
+            wrap_num = self.wrap_num
 
         # Prepare indent for Narration surface:
         if self.game.toggle_narration:
-            ind = "     "
+            ind = ' ' * narration_settings['txt_indentation']
         else:
             ind = ''
 
@@ -136,7 +135,7 @@ class Text_Box:
                     wrapped_text.append(new_color+':' + line.strip())
 
             else:
-                wrapped_text += textwrap.wrap(line, wrap_num, drop_whitespace=False, initial_indent=ind)
+                wrapped_text += textwrap.wrap(line, wrap_num, drop_whitespace=True, initial_indent=ind)
 
         return wrapped_text
 

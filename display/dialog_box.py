@@ -53,6 +53,11 @@ class Dialog_Box(Text_Box):
         if not self.max_lines:
             self.max_lines = 1
 
+        # Text wrap
+        self.wrap_num = dialog_settings['txt_wrap_length']
+        if self.wrap_num == 'auto':
+            self.wrap_num = int((self.surface.width - (self.x_txt_padding * 2)) / self.text_width)
+
 
     def parse_quote(self, dialog: list, set_disabled):
         """Called from scene -> Game.display_dialog()
@@ -176,7 +181,7 @@ class Dialog_Box(Text_Box):
 
 
 # Functional--------------------------------------
-    def config_surface(self, x=None, y=None, width=None, height=None, background_color=None, border_color=None, border_width=None, transparency=None, choice_menu_x=None, choice_menu_y=None, name_tag=False, temp=False):
+    def config_surface(self, x=None, y=None, width=None, height=None, background_color=None, border_color=None, border_width=None, transparency=None, choice_menu_x=None, choice_menu_y=None, txt_wrap=None, name_tag=False, temp=False):
         # Change for name_tag (created with use for name size):
         if name_tag:
             if background_color: self.surface.background_color = background_color
@@ -211,6 +216,15 @@ class Dialog_Box(Text_Box):
             self.max_lines = int((self.surface.height - (self.y_txt_padding * 1.5)) / self.text_height)
             if not self.max_lines:
                 self.max_lines = 1
+
+            # Text wrap
+            if txt_wrap != None:
+                self.wrap_num = txt_wrap
+                if self.wrap_num == 'auto':
+                    self.wrap_num = int((self.surface.width - (self.x_txt_padding * 2)) / self.text_width)
+
+            else:
+                self.wrap_num = int((self.surface.width - (self.x_txt_padding * 2)) / self.text_width)
 
 
 # Extra-------------------------------------------

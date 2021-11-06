@@ -9,7 +9,11 @@ class Narration_Box(Text_Box):
     # Inherits methods but no need for super()
     def __init__(self, game):
         self.game = game
-        self.surface = Surface(self.game.WIN, self.game, "15%", "5%", "70%", "70%", narration_settings['bg_color'], narration_settings['border_color'], narration_settings['border_width'], narration_settings['box_transparency'])
+        self.surface = Surface(self.game.WIN, self.game,
+            narration_settings['x'], narration_settings['y'],
+            narration_settings['width'], narration_settings['height'],
+            narration_settings['bg_color'], narration_settings['border_color'],
+            narration_settings['border_width'], narration_settings['box_transparency'])
 
         # Fonts:
         self.change_font(narration_settings['font_name'], narration_settings['font_size'], narration_settings['font_color'])
@@ -23,10 +27,17 @@ class Narration_Box(Text_Box):
         self.y_txt_padding = narration_settings['y_txt_padding']
         self.text_y = 0  # Location of last line to use with menu questions
 
-        # Max lines, depending on height of dialog box, text, and spacing:
-        self.max_lines = ((self.surface.height - (self.y_txt_padding * 2)) // self.text_height) - 1
-        if not self.max_lines:
-            self.max_lines = 1
+        # Max lines: 'auto' uses' height of dialog box, text, and spacing:
+        self.max_lines = narration_settings['max_lines']
+        if self.max_lines == 'auto':
+            self.max_lines = ((self.surface.height - (self.y_txt_padding * 2)) // self.text_height) - 1
+            if not self.max_lines:
+                self.max_lines = 1
+
+        # Text wrap:
+        self.wrap_num = narration_settings['txt_wrap_length']
+        if self.wrap_num == 'auto':
+            self.wrap_num = int((self.surface.width - (self.x_txt_padding * 2)) / self.text_width)
 
         self.image_surface_on = False  # Always False. Only used by text_boxes.py and wrap method for dialog box image. Can use later to add images to narration maybe
 
@@ -87,10 +98,27 @@ class Narration_Box(Text_Box):
         self.game.toggle_menu = False
 
 
-    def config_surface(self, x=None, y=None, width=None, height=None, background_color=None, border_color=None, border_width=None, transparency=None):
+    def config_surface(self, x=None, y=None, width=None, height=None, background_color=None, border_color=None, border_width=None, transparency=None, max_lines=None, txt_wrap=None):
         self.surface.configure(x, y, width, height, background_color, border_color, border_width, transparency)
 
-        # Max lines, depending on height of dialog box, text, and spacing:
-        self.max_lines = ((self.surface.height - (self.y_txt_padding * 2)) // self.text_height) - 1
-        if not self.max_lines:
-            self.max_lines = 1
+        # Max lines: 'auto' uses' height of dialog box, text, and spacing:
+        if narration_settings['max_lines'] == 'auto':
+            self.max_lines = ((self.surface.height - (self.y_txt_padding * 2)) // self.text_height) - 1
+            if not self.max_lines:
+                self.max_lines = 1
+        if max_lines:
+            self.max_lines = max_lines
+            if max_lines == 'auto':
+                self.max_lines = ((self.surface.height - (self.y_txt_padding * 2)) // self.text_height) - 1
+                if not self.max_lines:
+                    self.max_lines = 1
+            else:
+                self.max_lines = max_lines
+
+        # Text wrap
+        if narration_settings['txt_wrap_length'] == 'auto':
+            self.wrap_num = int((self.surface.width - (self.x_txt_padding * 2)) / self.text_width)
+        if txt_wrap:
+            self.wrap_num = txt_wrap
+            if txt_wrap == 'auto':
+                self.wrap_num = int((self.surface.width - (self.x_txt_padding * 2)) / self.text_width)
