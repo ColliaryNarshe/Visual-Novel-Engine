@@ -18,23 +18,34 @@ class Dialog_Box(Text_Box):
         self.bottom_y = dialog_settings['bottom_y']
 
         self.color = dialog_settings['font_color']
-        self.border_width = dialog_settings['border_width']
-        self.surface = Surface(self.WIN, self.game, dialog_settings['bottom_x'], dialog_settings['bottom_y'], "80%", "20%", dialog_settings['bg_color'], dialog_settings['border_color'], self.border_width, dialog_settings['box_transparency'])
+        self.surface = Surface(
+            self.WIN, self.game,
+            dialog_settings['bottom_x'], dialog_settings['bottom_y'],
+            dialog_settings['width'], dialog_settings['height'],
+            dialog_settings['bg_color'], dialog_settings['border_color'],
+            dialog_settings['border_width'], dialog_settings['box_transparency']
+        )
 
         # Image Surface
-        self.img_surface = Surface(self.WIN, self.game, self.surface.x, self.surface.y, self.surface.height, self.surface.height, 0, dialog_settings['border_color'], 2, dialog_settings['box_transparency'])
+        if dialog_settings['image_size'] == 'auto':
+            _, self.image_size = self.game._convert_percents_into_ints(None, dialog_settings['height'])
+        else:
+            _, self.image_size = self.game._convert_percents_into_ints(None, dialog_settings['image_size'])
+        self.img_surface = Surface(self.WIN, self.game, self.surface.x, self.surface.y, self.image_size, self.image_size, 0, dialog_settings['border_color'], dialog_settings['image_border_width'], dialog_settings['box_transparency'])
         self.image_surface_on = True
+
+
+        # Name tag
         self.name_tag_y = dialog_settings['name_tag_y']
         self.name_tag_x = self.surface.surface_rect.height * dialog_settings['name_tag_x_multiplier']
+        self.name = None  # Name tag
+        self.name_on = True  # To not draw nametag
 
         # Create choice menu:
         self.choice_menu_x = self.surface.surface_rect.right + dialog_settings['choice_menu_x'] + 20  # 20 is padding (hardcoded in menu add_bg below)
         self.choice_menu_y = self.surface.surface_rect.top + int(self.surface.surface_rect.height * dialog_settings['choice_menu_y']) + 20  # 20 is padding
         self.game.create_menu(self.box_name, [['temp', True]], self.choice_menu_x, self.choice_menu_y, color='white', size=dialog_settings['font_size'], spacing=5)
-        self.game.menus[self.box_name].add_bg(padding=20, bg_color ='darkblue', border_color='Grey', border_width=5, transparency=dialog_settings['box_transparency'])
-
-        self.name = None  # Name tag
-        self.name_on = True  # To not draw nametag
+        self.game.menus[self.box_name].add_bg(padding=20, bg_color ='darkblue', border_color='Grey', border_width=self.surface.border_width, transparency=dialog_settings['box_transparency'])
 
         # Fonts for main window & name tag:
         self.change_font(dialog_settings['font_name'], dialog_settings['font_size'], self.color)
@@ -48,10 +59,12 @@ class Dialog_Box(Text_Box):
         self.x_txt_padding = dialog_settings['x_txt_padding']
         self.y_txt_padding = dialog_settings['y_txt_padding']
 
-        # Max lines, depending on height of dialog box, text, and spacing:
-        self.max_lines = int((self.surface.height - (self.y_txt_padding * 1.5)) / self.text_height)
-        if not self.max_lines:
-            self.max_lines = 1
+        # Max lines: 'auto' uses height of dialog box, text, and spacing:
+        self.max_lines = dialog_settings['max_lines']
+        if self.max_lines == 'auto':
+            self.max_lines = int((self.surface.height - (self.y_txt_padding * 1.5)) / self.text_height)
+            if not self.max_lines:
+                self.max_lines = 1
 
         # Text wrap
         self.wrap_num = dialog_settings['txt_wrap_length']
@@ -149,7 +162,7 @@ class Dialog_Box(Text_Box):
         name_render = self.name_tag_font.render(self.name, 1, self.name_tag_color)
         name_render_rect = name_render.get_rect(topleft=(10, 5))
         # Create new surface based on text size:
-        self.name_surface = Surface(self.WIN, self.game, self.surface.x + self.name_tag_x, self.surface.y + self.name_tag_y, name_render_rect.width + 20, name_render_rect.height + 20, self.surface.background_color, self.surface.border_color, self.border_width, self.surface.transparency)
+        self.name_surface = Surface(self.WIN, self.game, self.surface.x + self.name_tag_x, self.surface.y + self.name_tag_y, name_render_rect.width + 20, name_render_rect.height + 10, self.surface.background_color, self.surface.border_color, self.surface.border_width, self.surface.transparency)
         # Add text to new surface:
         self.name_surface.display_text_list = [(name_render, name_render_rect)]
 
@@ -161,7 +174,7 @@ class Dialog_Box(Text_Box):
         choices = self._convert_choices(choices, set_disabled)
 
         self.game.menus[self.box_name].update_text(choices)
-        self.game.menus[self.box_name].add_bg(padding=20, bg_color=self.surface.background_color, border_color='Grey', border_width=5, transparency=self.surface.transparency)
+        self.game.menus[self.box_name].add_bg(padding=20, bg_color=self.surface.background_color, border_color='Grey', border_width=self.surface.border_width, transparency=self.surface.transparency)
 
         self.game.menus[self.box_name].bg_surface.hide_surface = True
 
@@ -181,7 +194,7 @@ class Dialog_Box(Text_Box):
 
 
 # Functional--------------------------------------
-    def config_surface(self, x=None, y=None, width=None, height=None, background_color=None, border_color=None, border_width=None, transparency=None, choice_menu_x=None, choice_menu_y=None, txt_wrap=None, name_tag=False, temp=False):
+    def config_surface(self, x=None, y=None, width=None, height=None, background_color=None, border_color=None, border_width=None, transparency=None, choice_menu_x=None, choice_menu_y=None, txt_wrap='auto', max_lines='auto', x_txt_padding=None, y_txt_padding=None, image_size='auto', image_border_width=None, name_tag=False, temp=False):
         # Change for name_tag (created with use for name size):
         if name_tag:
             if background_color: self.surface.background_color = background_color
@@ -201,7 +214,17 @@ class Dialog_Box(Text_Box):
             self.surface.configure(x, y, width, height, background_color, border_color, border_width, transparency)
 
             # Image surface:
-            self.img_surface.configure(x, y, height, height, 0, border_color, 2, transparency)
+            if image_size == 'auto':
+                self.image_size = self.surface.height
+            else:
+                _, self.image_size = self.game._convert_percents_into_ints(None, image_size)
+
+            if image_border_width != None:
+                bw = image_border_width
+            else:
+                bw = self.img_surface.border_width
+
+            self.img_surface.configure(x, y, self.image_size, self.image_size, 0, border_color, bw, transparency)
 
             # Create Menu:
             if choice_menu_x != None:
@@ -210,22 +233,27 @@ class Dialog_Box(Text_Box):
                 self.choice_menu_y = self.surface.surface_rect.top + int(self.surface.surface_rect.height * choice_menu_y) + 20  # 20 is padding
 
             self.game.create_menu(self.box_name, [['temp', True]], self.choice_menu_x, self.choice_menu_y, color=self.color, size=self.text_size, spacing=5)
-            self.game.menus[self.box_name].add_bg(padding=20, bg_color=self.surface.background_color, border_color=self.surface.border_color, border_width=5, transparency=self.surface.transparency)
+            self.game.menus[self.box_name].add_bg(padding=20, bg_color=self.surface.background_color, border_color=self.surface.border_color, border_width=self.surface.border_width, transparency=self.surface.transparency)
 
-            # Max lines, depending on height of dialog box, text, and spacing:
-            self.max_lines = int((self.surface.height - (self.y_txt_padding * 1.5)) / self.text_height)
-            if not self.max_lines:
-                self.max_lines = 1
+            # Text padding:
+            if x_txt_padding != None:
+                self.x_txt_padding = x_txt_padding
+            if y_txt_padding != None:
+                self.y_txt_padding = y_txt_padding
+
+            # Max lines: 'auto' uses height of dialog box, text, and spacing:
+            if max_lines == 'auto':
+                self.max_lines = int((self.surface.height - (self.y_txt_padding * 1.5)) / self.text_height)
+                if not self.max_lines:
+                    self.max_lines = 1
+            else:
+                self.max_lines = max_lines
 
             # Text wrap
-            if txt_wrap != None:
-                self.wrap_num = txt_wrap
-                if self.wrap_num == 'auto':
-                    self.wrap_num = int((self.surface.width - (self.x_txt_padding * 2)) / self.text_width)
-
-            else:
+            if txt_wrap == 'auto':
                 self.wrap_num = int((self.surface.width - (self.x_txt_padding * 2)) / self.text_width)
-
+            else:
+                self.wrap_num = txt_wrap
 
 # Extra-------------------------------------------
     def move_dialog_up(self, x=None, y=None):

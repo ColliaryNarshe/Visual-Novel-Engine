@@ -14,9 +14,6 @@ class Text_Box:
         if self.gradual_typing:
             typing = True
             while typing:
-                # To make sure screen is loaded already, some kind of lag before writing characters one at a time.
-                self.game.game_loop_input(2, tick=False)
-
                 for num, line in enumerate(text):
                     rendering = ''  # The characters of incomplete line to render
                     y = self.y_txt_padding + (self.text_height * num)  # new lines
@@ -48,7 +45,7 @@ class Text_Box:
                         if self.image_surface_on:
                             text_rect = rendered_text.get_rect(topleft=(self.x_txt_padding + self.surface.surface_rect.height, y))
                         else:  # If dialog box has no image:
-                            text_rect = rendered_text.get_rect(topleft=(self.x_txt_padding, y + 10))
+                            text_rect = rendered_text.get_rect(topleft=(self.x_txt_padding, y))
 
                         # Add the text to surface
                         self.surface.display_text_list.append((rendered_text, text_rect))
@@ -88,7 +85,7 @@ class Text_Box:
             if self.image_surface_on:
                 text_rect = rendered_text.get_rect(topleft=(self.x_txt_padding + self.surface.surface_rect.height, y))
             else:  # If dialog box has no image:
-                text_rect = rendered_text.get_rect(topleft=(self.x_txt_padding, y + 10))
+                text_rect = rendered_text.get_rect(topleft=(self.x_txt_padding, y))
 
             self.surface.display_text_list.append((rendered_text, text_rect))
 

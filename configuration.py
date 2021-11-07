@@ -5,13 +5,16 @@ flag_variables = {
 }
 
 dialog_settings = {
+    'width': '80%',
+    'height': '20%',
+    'max_lines': 'auto',
+    'txt_wrap_length': 70, # Can also use 'auto' to fit between x_txt_padding
     'gradual_typing': True,
     'typing_speed': 15,  # Pause between characters, higher is slower
     'font_name': 'Georgia',
     'font_size': 25,
-    'txt_wrap_length': 'auto',
     'name_tag_font_size': 40,
-    'name_tag_y': -45,  # 0 aligns with top of box
+    'name_tag_y': -35,  # 0 aligns with top of box
     'name_tag_x_multiplier': .5,  # Multiplied by width of character portrait.
     'y_txt_padding': 30,  # Space between top of box and first line of text.
     'x_txt_padding': 30,
@@ -19,7 +22,7 @@ dialog_settings = {
     'bg_color': 'DarkBlue',
     'box_transparency': 255, # 0-255
     'border_color': 'Grey',
-    'border_width': 5,
+    'border_width': 3,
     'highlight_color': 'Red',
     # Default positions:
     'bottom_x': '10%',
@@ -27,7 +30,9 @@ dialog_settings = {
     'top_x': '10%',
     'top_y': '10%',
     'choice_menu_x': -40,  # From right edge of dialog box
-    'choice_menu_y': .20  # Multiplier for height of dialog box then added from top
+    'choice_menu_y': .20,  # Multiplier for height of dialog box then added from top
+    'image_size': 'auto', # Takes also percent (eg '20%') or int; 'auto' matches height
+    'image_border_width': 2
 }
 
 narration_settings = {

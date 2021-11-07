@@ -84,8 +84,7 @@ class Game(Transitions):
         self.menus = {}
 
         self.dialog_boxes = {'default': Dialog_Box(self, 'default_dialog')}
-        self.create_dialog('default2', name_tag_y=-65, transparency=200, choice_menu_x=0, choice_menu_y=0, x='15%', width='70%')
-        self.dialog_boxes['default2'].y_txt_padding = 15
+        self.create_dialog('default2', name_tag_y=-56, transparency=200, choice_menu_x=0, choice_menu_y=0, x='15%', width='70%', border_width=2, txt_wrap=63, max_lines=4, x_txt_padding=15, y_txt_padding=10, image_border_width=0)
         self.dialog_box = self.dialog_boxes['default']
 
         self.narration_box = Narration_Box(self)
@@ -186,12 +185,15 @@ class Game(Transitions):
     def create_dialog(self, name, x=None, y=None, width=None, height=None,
                       background_color=None, border_color=None, border_width=None,
                       transparency=None, name_tag_x=None, name_tag_y=None,
-                      choice_menu_x=None, choice_menu_y=None):
+                      choice_menu_x=None, choice_menu_y=None,
+                      txt_wrap='auto', max_lines='auto',
+                      x_txt_padding=None, y_txt_padding=None,
+                      image_size='auto', image_border_width=None):
 
 
         self.dialog_boxes[name] = Dialog_Box(self, name)
 
-        self.dialog_boxes[name].config_surface(x, y, width, height, background_color, border_color, border_width, transparency, choice_menu_x, choice_menu_y)
+        self.dialog_boxes[name].config_surface(x, y, width, height, background_color, border_color, border_width, transparency, choice_menu_x, choice_menu_y, txt_wrap, max_lines, x_txt_padding, y_txt_padding, image_size, image_border_width)
         self.dialog_boxes[name].config_surface(x=name_tag_x, y=name_tag_y, transparency=transparency, name_tag=True)
 
 

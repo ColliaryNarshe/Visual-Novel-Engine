@@ -98,8 +98,15 @@ class Narration_Box(Text_Box):
         self.game.toggle_menu = False
 
 
-    def config_surface(self, x=None, y=None, width=None, height=None, background_color=None, border_color=None, border_width=None, transparency=None, max_lines=None, txt_wrap=None):
+    def config_surface(self, x=None, y=None, width=None, height=None, background_color=None, border_color=None, border_width=None, transparency=None, max_lines=None, txt_wrap=None, x_txt_padding=None, y_txt_padding=None):
+
         self.surface.configure(x, y, width, height, background_color, border_color, border_width, transparency)
+
+        # Text padding:
+        if x_txt_padding != None:
+            self.x_txt_padding = x_txt_padding
+        if y_txt_padding != None:
+            self.y_txt_padding = y_txt_padding
 
         # Max lines: 'auto' uses' height of dialog box, text, and spacing:
         if narration_settings['max_lines'] == 'auto':
