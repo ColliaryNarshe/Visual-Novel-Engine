@@ -8,7 +8,7 @@ class Coordinator:
         self.maps = maps
 
     def coordinate(self, name):
-        from game.input_check import check_input
+        # from game.input_check import check_input
         map_loc = self.maps[name].map_loc
         map_image = pygame.image.load(map_loc).convert_alpha()
         map_image = pygame.transform.scale(map_image, (self.game.win_width, self.game.win_height))
@@ -20,7 +20,7 @@ class Coordinator:
         while True:
             clock.tick(FPS)
 
-            coordinates = check_input(self.game)
+            coordinates = self.game.input_class.check_input()
             if coordinates:
                 x = coordinates[0] / self.game.win_width
                 y = coordinates[1] / self.game.win_height

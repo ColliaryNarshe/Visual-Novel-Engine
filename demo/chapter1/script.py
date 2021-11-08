@@ -9,7 +9,7 @@ class TitleScreen:
         self.bg_color = 'White'
 
         # Optional space for any useful code:
-        self.menu_list = [["Start", True], ["Options", True], ["Quit", True]]
+        self.menu_list = [["Start", True], ["Chapter 2", True], ["Quit", True]]
 
 
     def run(self):
@@ -24,14 +24,14 @@ class TitleScreen:
         self.game.menus['start_screen'].show_menu(remove=False)
 
 
-        if self.game.input_return == 0:  # Start
+        if self.game.input_return == 'Start':
             self.game.play_song(fade=2000)
             self.game.fade_out()
             self.game.menus['start_screen'].remove_menu()
             self.game.clear_bg_text()
             self.game.change_scene('chapter1', 'scene1')
 
-        elif self.game.input_return == 1:  # Options
+        elif self.game.input_return == 'Chapter 2':
             self.game.play_song(fade=1000)
             self.game.slide_left('sean-musil-field.jpg')
             self.game.menus['start_screen'].remove_menu()
@@ -39,7 +39,7 @@ class TitleScreen:
             self.game.change_scene('chapter2', 'scene1')
             self.game.play_song('Fantasy_Motion(cut).mp3', 0.4)
 
-        elif self.game.input_return == 2:  # Quit
+        elif self.game.input_return == 'Quit':
             self.game.exit_game()
 
 
@@ -75,11 +75,11 @@ class Scene1:
         self.game.dialog_box.move_dialog_up()
 
         # Check dialog menu choice to display different text:
-        if self.game.input_return == 0:
+        if self.game.input_return == 'Yes':
             self.game.display_dialog([["John", 0, "Great! Now my name's changed with no picture. Also the dialog box is up here!"]])
-        elif self.game.input_return == 1:
+        elif self.game.input_return == 'No':
             self.game.display_dialog([['', 0, "Well too bad! Also I have no name or picture."]])
-        elif self.game.input_return == 2:
+        elif self.game.input_return == 'Maybe':
             self.game.display_dialog([["Arjen", '', "Geez, make up your mind. Wait, what happened to my headshot?"]])
 
         # Bring dialog box back down

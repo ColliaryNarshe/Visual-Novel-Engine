@@ -64,33 +64,41 @@ class Narration_Box(Text_Box):
         choices = self._convert_choices(choices, set_disabled)
 
         # Wrap text lines to proper width:
-        full_text = self._format_text_wrap(text)
+        if isinstance(text, str):
+            full_text = [self._format_text_wrap(text)]
+        else:
+            full_text = []
+            for page in text:
+                full_text.append(self._format_text_wrap(page))
 
         # Clear text at start rather than end to not clear last loop in case box is kept up:
         self.surface.clear_text()
 
-        # Check if number of text lines are more than max_lines:
-        display_times = int(math.ceil(len(full_text) / self.max_lines)) # Number of boxes needed
+        for pg_idx, new_page in enumerate(full_text):
+            # Check if number of text lines are more than max_lines:
+            num_of_pages = int(math.ceil(len(new_page) / self.max_lines)) # Number of boxes needed
 
-        partial_text = ''
+            partial_text = ''
 
-        for idx in range(display_times):
-            partial_text = full_text[:self.max_lines]
-            full_text = full_text[self.max_lines:]
+            for idx in range(num_of_pages):
+                partial_text = new_page[:self.max_lines]
+                new_page = new_page[self.max_lines:]
 
-            # Only add menu to last full_text:
-            if idx + 1 == len(range(display_times)):
-                self._render_dialog_txt(partial_text, narration_menu=choices)
-            else:
-                self._render_dialog_txt(partial_text)
+                # Only add menu to last new_page:
+                if idx + 1 == len(range(num_of_pages)):
+                    self._render_dialog_txt(partial_text, narration_menu=choices)
+                else:
+                    self._render_dialog_txt(partial_text)
 
-            # Game loop:
-            self.surface.triangle = True
-            self.game.game_loop_input()
-            self.surface.triangle = False
-            # Don't clear last one in case window kept up
-            if idx + 1 != display_times:
-                self.surface.clear_text()
+                # Game loop:
+                self.surface.triangle = True
+                self.game.game_loop_input()
+                self.surface.triangle = False
+                # Don't clear last one in case window kept up
+                if idx + 1 == num_of_pages and pg_idx + 1 == len(full_text):
+                    pass
+                else:
+                    self.surface.clear_text()
 
 
     def remove_narration_box(self):

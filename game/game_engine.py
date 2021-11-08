@@ -3,13 +3,14 @@ from sys import exit
 from os import remove as os_remove
 import json
 from importlib import import_module
+from collections import OrderedDict
 
 from display.dialog_box import Dialog_Box
 from display.maps import Map
 from display.menu import Menu
 from display.narration import Narration_Box
 from display.surfaces import Surface
-from game.input_check import check_input as ch_in
+from game.input_check import InputCheck
 from game.transitions import Transitions
 from configuration import flag_variables
 from game.get_data import get_data, get_saves
@@ -29,6 +30,7 @@ class Game(Transitions):
         self.current_scene = starting_scene
         self.project_dir = project_dir
         project = import_module(project_dir + '.scene_list')
+        self.input_class = InputCheck(self)
 
         self.current_menu = ''
         self.current_map = ''
@@ -36,10 +38,6 @@ class Game(Transitions):
         self.menu_cursor_loc = -1
 
         self.transition_surface = pygame.Surface((self.win_width, self.win_height))
-
-        # Menu scrolling speed (used in input_check.py):
-        self.speed = self.FPS // 6  # Higher total value is slower
-        self.count = self.speed
 
         # Transitions ----------
         self.toggle_fade_out = False  # Fade to black
@@ -61,15 +59,11 @@ class Game(Transitions):
 
         self.backdrop_text = []
         self.portraits_to_blit = {}
-        self.map_loc_list = []  # Used to cycle locations in input_check
 
         self.saves = {}  # Saved games
 
-        # Used by user to create variables (To use later when saving):
+        # Used by user to create variables (Used with game saving):
         self.flag_vars = {**flag_variables}
-        # Other methods of merging dictionaries:
-        # self.flag_vars |= flag_variables
-        # self.flag_vars.update(flag_variables)
 
         # Game flags: toggle game, dialog, narration, menu, map
         self.game_running = True
@@ -97,10 +91,13 @@ class Game(Transitions):
         project.get_scenes(self)
 
 
-    def game_loop_input(self, no_input=False, tick=True):
-        """Main game loop.
-           Take a number for no_input which equals repetions which can be used as
-           a pause of sorts, or to refresh the screen (without input)"""
+    def game_loop_input(self, no_input: int=False, tick=True):
+        """
+        Main game loop.
+        no_input takes a number which equals number of cycles (without input)
+        0 or False will continue loop until input by user is given.
+        tick will toggle the FPS limiter.
+        """
 
         rep_max = 0
 
@@ -219,19 +216,26 @@ class Game(Transitions):
         self.current_map = map.lower()
 
         # Add locations to list to have index locations for input_check
-        self.map_loc_list = []
-        for name, loc in self.maps[self.current_map].coordinates.items():
-            if loc[2]:  # If show/hide
-                self.map_loc_list.append([name] + loc)
+        self.current_map_locs = OrderedDict()
+
+        map_dict = self.maps[self.current_map].coordinates
+
+        for idx, name in enumerate(map_dict):
+            if map_dict[name]['visibility']:  # If show/hide
+                self.current_map_locs[idx] = {
+                    'name': name,
+                    'highlighted': False
+                }
+
             # Reset highlighted location to normal
             if reset_loc:
-                self.maps[self.current_map].rects[name][1] = False
+                self.current_map_locs[idx]['highlighted'] = False
             if set_loc:
                 if set_loc.lower() == name.lower():
-                    self.maps[self.current_map].rects[name][1] = True
+                    self.current_map_locs[idx]['highlighted'] = True
 
         # If there are no locations, bit map as an image only
-        if not self.map_loc_list:
+        if not self.current_map_locs:
             display_only = True
 
         if not display_only:
@@ -240,11 +244,11 @@ class Game(Transitions):
 
 
     def show_map_loc(self, map: str, loc_name: str):
-        self.maps[map.lower()].coordinates[loc_name][2] = True
+        self.maps[map.lower()].coordinates[loc_name]['visibility'] = True
 
 
     def hide_map_loc(self, map: str, loc_name: str):
-        self.maps[map.lower()].coordinates[loc_name][2] = False
+        self.maps[map.lower()].coordinates[loc_name]['visibility'] = False
 
 
     def remove_map(self, keep_display=False):
@@ -405,7 +409,7 @@ class Game(Transitions):
 
 
     def check_input(self):
-        self.input_return = ch_in(self)
+        self.input_return = self.input_class.check_input()
 
 
     def save(self, index:int = None, name:str = None) -> ".json file":

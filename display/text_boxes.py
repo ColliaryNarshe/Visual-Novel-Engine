@@ -1,5 +1,4 @@
 import pygame
-from configuration import pygame_colors
 from configuration import narration_settings
 import textwrap
 
@@ -17,7 +16,6 @@ class Text_Box:
                 for num, line in enumerate(text):
                     rendering = ''  # The characters of incomplete line to render
                     y = self.y_txt_padding + (self.text_height * num)  # new lines
-
                     color, line = self._check_color_change(line)
 
                     for char in line:
@@ -107,32 +105,32 @@ class Text_Box:
         else:
             ind = ''
 
-        # First split along any \n
-        split_text = []
-        split_text += text.splitlines()
+        # First split along any newlines (paragraphs)
+        split_text = text.splitlines()
 
-        wrapped_text = []
-        new_color = ''
-        # Split by width:
-        for line in split_text:
+        wrapped_text = []  # List of lines
+        new_color = None  # Escape character color
+
+        for paragraph in split_text:
 
             # This allows multiple newlines, otherwise textwrap will remove it
-            if not line:
-                line = " "
+            if not paragraph:
+                paragraph = " "
 
             # Check for color marker at start of string:
-            for name in pygame_colors:
-                if line.lower().startswith(name+':'):
-                    new_color = name
-                    color_len = len(name) + 1
+            for color in pygame.color.THECOLORS.keys():
+                if paragraph.startswith('<') and paragraph.lower().startswith(f'<{color}>'):
+                    new_color = color
+                    color_len = len(color) + 2
 
             if new_color:
-                colored = textwrap.wrap(line[color_len:], wrap_num, drop_whitespace=True, initial_indent=ind)
-                for line in colored:
-                    wrapped_text.append(new_color+':' + line.strip())
+                colored = textwrap.wrap(paragraph[color_len:], wrap_num, drop_whitespace=True, initial_indent=ind)
+                for paragraph in colored:
+                    wrapped_text.append(f'<{new_color}>' + paragraph)
+                new_color = None
 
             else:
-                wrapped_text += textwrap.wrap(line, wrap_num, drop_whitespace=True, initial_indent=ind)
+                wrapped_text += textwrap.wrap(paragraph, wrap_num, drop_whitespace=True, initial_indent=ind)
 
         return wrapped_text
 
@@ -159,15 +157,16 @@ class Text_Box:
 
 
     def _check_color_change(self, line):
-        """Used for color specification within text ('RED:')"""
+        """Used for color specification within text ('<Red>')"""
 
         color = None
 
-        for name in pygame_colors:
-            if line.lower().startswith(name+':'):
-                color = name
-                num = len(name) + 1
+        for color_name in pygame.color.THECOLORS.keys():
+            if line.startswith('<') and line.lower().startswith(f'<{color_name}>'):
+                color = color_name
+                num = len(color) + 2
                 line = line[num:]
+
 
         if not color:
             color = self.color
@@ -177,42 +176,20 @@ class Text_Box:
 
     def change_font(self, font_name=None, text_size=None, color=None, name_tag=False):
         """Renders new font to reset height and width"""
+
         # Check if arguments given, and create the variables
         if not name_tag:
-            if not font_name:
-                font_name = self.font_name
-            else:
-                self.font_name = font_name
+            if font_name: self.font_name = font_name
+            if text_size: self.text_size = text_size
+            if color: self.color = color
 
-            if not text_size:
-                text_size = self.text_size
-            else:
-                self.text_size = text_size
-
-            if not color:
-                color = self.color
-            else:
-                self.color = color
-
-
-            self.font = pygame.font.SysFont(font_name, text_size, 0)
+            self.font = pygame.font.SysFont(self.font_name, self.text_size, 0)
 
         # Check name tag data
         else:
-            if not font_name:
-                font_name = self.name_tag_font_name
-            else:
-                self.name_tag_font_name = font_name
-
-            if not text_size:
-                text_size = self.name_tag_size
-            else:
-                self.name_tag_size = text_size
-
-            if not color:
-                color = self.name_tag_color
-            else:
-                self.name_tag_color = color
+            if font_name: self.name_tag_font_name = font_name
+            if text_size: self.name_tag_size = text_size
+            if color: self.name_tag_color = color
 
             self.name_tag_font = pygame.font.SysFont(font_name, text_size, 1)
 

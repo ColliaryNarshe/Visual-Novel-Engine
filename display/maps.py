@@ -11,8 +11,12 @@ class Map:
 
         if coordinates:
             # ['pub', (x,y), None, True]
-            for loc_name, coordinates, padding, show in coordinates:
-                self.coordinates[loc_name] = [coordinates, padding, show]
+            for loc_name, coordinates, padding, visibility in coordinates:
+                self.coordinates[loc_name] = {
+                    'coordinates': coordinates,
+                    'padding': padding,
+                    'visibility': visibility
+                }
 
         self.config_map(
             map_settings['x_y'], map_settings['width_height'],
@@ -49,7 +53,10 @@ class Map:
         self.map_rect = self.map_image.get_rect(topleft=(self.x, self.y))
         self.surface = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
 
-        for name, (coor, padding, _) in self.coordinates.items():
+        for name in self.coordinates:
+            padding = self.coordinates[name]['padding']
+            coor = self.coordinates[name]['coordinates']
+
             if not padding:
                 padding = self.padding
 
@@ -60,7 +67,7 @@ class Map:
             length = padding * 2
             rect = pygame.Rect(x, y, length, length)
 
-            self.rects[name] = [rect, False]
+            self.rects[name] = rect
 
             # Draw the textbox:
             left = self.x + (self.width // 4)
@@ -80,8 +87,12 @@ class Map:
             pygame.draw.rect(self.game.WIN, self.border_color, self.map_rect, self.border_width)
 
         # get rects, draw dots
-        for name, (rect, hover) in self.rects.items():
-            if self.coordinates[name][2]:
+        for loc_idx in self.game.current_map_locs:
+            name = self.game.current_map_locs[loc_idx]['name']
+            hover = self.game.current_map_locs[loc_idx]['highlighted']
+            rect = self.rects[name]
+
+            if self.coordinates[name]['visibility']:
                 if hover:
                     # Change circle color
                     pygame.draw.circle(self.surface, self.dot_highlight_color, (rect.centerx, rect.centery), self.dot_radius)

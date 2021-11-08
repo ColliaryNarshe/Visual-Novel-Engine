@@ -82,13 +82,6 @@ sound_effects = [
     ['selected', "assets/audio/sound_effects/save.mp3"]
 ]
 
-# Add more pygame colors if necessary. (Used with changing color at start of text)
-# Find a list of all pygame colors by looping through: pygame.color.THECOLORS.keys()
-# Not looping entire list in game since it goes through it every frame
-pygame_colors = ['red', 'green', 'blue', 'pink', 'orange', 'yellow', 'white',
-                 'black', 'grey', 'cyan', 'aquamarine', 'magenta']
-
-
 # Sheets of 8 images, 144x144 pixels each. List of nums represents which images to use
 dialog_image_sheets = [
     ["Arjen", 'assets/faces/Arjen.png', [0,1,2,3,4,5]],

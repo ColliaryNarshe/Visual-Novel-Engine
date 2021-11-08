@@ -1,6 +1,5 @@
 import pygame
 from display.surfaces import Surface
-from game.input_check import menu_move_down
 
 class Menu:
     def __init__(self, game, name, items: list, x, y, color="Black", font_size=40, spacing=10, align='left', bold=0, font='georgia'):
@@ -85,7 +84,7 @@ class Menu:
                     # Disabled text and adjust cursor
                     self.game.WIN.blit(disabled, rect)
                     if idx == self.game.menu_cursor_loc:
-                        menu_move_down(self.game)
+                        self.game.input_class.menu_move_down()
 
 
     def disable_enable_menu_item(self, idx):
