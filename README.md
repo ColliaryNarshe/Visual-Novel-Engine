@@ -4,6 +4,8 @@ Create a simple visual novel using images, music, dialog boxes, narration text, 
 
 To create your own visual novel, use the list of commands in documentation.pdf and look at the script.py files in the demo directory for an example of how they're used.
 
+Created using pygame 3.9.
+
 <div>
 <img title="Title Screen" width=40% src="https://github.com/ColliaryNarshe/Visual-Novel-Engine/blob/main/screenshots/title_screen.jpg">
 <img title="Map Screen" width=40% src=https://github.com/ColliaryNarshe/Visual-Novel-Engine/blob/main/screenshots/map_screen.jpg>
