@@ -83,7 +83,7 @@ class InputCheck():
                     self.game.exit_game()
 
                 # Press RETURN:
-                if event.key == pygame.K_RETURN:
+                if event.key == pygame.K_RETURN or event.key == pygame.K_SPACE:
                     # Map
                     if self.game.map_getting_input:
                         # It's possible no item is selected, so check first:

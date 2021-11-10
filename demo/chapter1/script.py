@@ -13,7 +13,6 @@ class TitleScreen:
 
 
     def run(self):
-        # Start song
         self.game.play_song('Farm(cut).mp3', .4)
 
         # Draw title onto background:
@@ -33,7 +32,7 @@ class TitleScreen:
 
         elif self.game.input_return == 'Chapter 2':
             self.game.play_song(fade=1000)
-            self.game.slide_left('sean-musil-field.jpg')
+            self.game.fade_out()
             self.game.menus['start_screen'].remove_menu()
             self.game.clear_bg_text()
             self.game.change_scene('chapter2', 'scene1')
@@ -85,5 +84,4 @@ class Scene1:
         # Bring dialog box back down
         self.game.dialog_box.move_dialog_down()
 
-        self.game.slide_right('sean-musil-field.jpg')
         self.game.change_scene('chapter2', 'scene1')

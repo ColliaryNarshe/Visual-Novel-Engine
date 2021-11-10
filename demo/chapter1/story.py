@@ -9,3 +9,6 @@ arjen_dialog = "If the text entered is too large to fit in the box, it will auto
 
 demo_dialog = [['Arjen', 0, arjen_dialog],
                ['Eilan', 0, "Now let's ask a question. Do you want another dialog box?", ["Yes", "No", "Maybe"]]]
+
+scroll_demo = """You can also display text with a scroll like this.
+Press Spacebar or Enter for fast forward."""

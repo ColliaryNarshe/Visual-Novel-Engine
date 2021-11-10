@@ -6,12 +6,12 @@ class Transitions:
     def fade_out(self):
         """Called from Scene, calls game loop"""
         self.toggle_fade_out = True
-        self.fade_timer = 0
-        while self.fade_timer < 255:
+        self.animation_timer = 0
+        while self.animation_timer < 255:
             self.game_loop_input(1)
         self.game_loop_input(5)
         self.transition_surface.set_alpha(255)
-        self.fade_timer = 255
+        self.animation_timer = 255
         self.toggle_fade_out = False
 
 
@@ -19,18 +19,18 @@ class Transitions:
         """Called from game loop"""
         # To fade screen to black
         self.transition_surface.fill((0,0,0))
-        self.transition_surface.set_alpha(self.fade_timer)
+        self.transition_surface.set_alpha(self.animation_timer)
         self.WIN.blit(self.transition_surface, (0,0))
-        self.fade_timer += 5
-        if self.fade_timer > 255:
+        self.animation_timer += 5
+        if self.animation_timer > 255:
             pygame.event.clear()
 
 
     def fade_in(self):
         """Called from Scene, calls mainloop"""
         self.toggle_fade_in = True
-        self.fade_timer = 255
-        while self.fade_timer > 0:
+        self.animation_timer = 255
+        while self.animation_timer > 0:
             self.game_loop_input(1)
         self.transition_surface.set_alpha(255)
         pygame.event.clear()
@@ -41,19 +41,19 @@ class Transitions:
         """Called from game loop"""
         # To fade screen to black
         self.transition_surface.fill((0,0,0))
-        self.transition_surface.set_alpha(self.fade_timer)
+        self.transition_surface.set_alpha(self.animation_timer)
         self.WIN.blit(self.transition_surface, (0,0))
-        self.fade_timer -= 5
-        if self.fade_timer < 0:
-            self.fade_timer = 0
+        self.animation_timer -= 5
+        if self.animation_timer < 0:
+            self.animation_timer = 0
 
 
     def slide_right(self, image):
         """Called from Scene, calls game loop"""
         self.toggle_slide_right = True
-        self.fade_timer = self.win_width
+        self.animation_timer = self.win_width
         self.transition_surface.blit(self.backgrounds[image], (0, 0))
-        while self.fade_timer > 0:
+        while self.animation_timer > 0:
             self.game_loop_input(1)
         self.game_loop_input(1)
         self.toggle_slide_right = False
@@ -61,19 +61,19 @@ class Transitions:
 
     def slide_right_transition(self):
         """Called from game loop"""
-        self.WIN.blit(self.transition_surface, (self.fade_timer, 0))
-        self.fade_timer -= 30
-        if self.fade_timer < 0:
+        self.WIN.blit(self.transition_surface, (self.animation_timer, 0))
+        self.animation_timer -= 30
+        if self.animation_timer < 0:
             pygame.event.clear()
-            self.fade_timer = 0
+            self.animation_timer = 0
 
 
     def slide_left(self, image):
         """Called from Scene, calls game loop"""
         self.toggle_slide_left = True
-        self.fade_timer = -self.win_width
+        self.animation_timer = -self.win_width
         self.transition_surface.blit(self.backgrounds[image], (0, 0))
-        while self.fade_timer < 0:
+        while self.animation_timer < 0:
             self.game_loop_input(1)
         self.game_loop_input(1)
         self.toggle_slide_left = False
@@ -81,11 +81,11 @@ class Transitions:
 
     def slide_left_transition(self):
         """Called from game loop"""
-        self.WIN.blit(self.transition_surface, (self.fade_timer, 0))
-        self.fade_timer += 30
-        if self.fade_timer > 0:
+        self.WIN.blit(self.transition_surface, (self.animation_timer, 0))
+        self.animation_timer += 30
+        if self.animation_timer > 0:
             pygame.event.clear()
-            self.fade_timer = 0
+            self.animation_timer = 0
 
 
     def shake_screen(self, pause=False):

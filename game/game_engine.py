@@ -69,6 +69,7 @@ class Game(Transitions):
         self.game_running = True
         self.toggle_dialog = False
         self.toggle_narration = False
+        self.toggle_narration_scroll = False
         self.toggle_menu = False
         self.toggle_map = False
         self.map_getting_input = False  # Turns off map input but still display
@@ -132,6 +133,9 @@ class Game(Transitions):
 
             if self.toggle_menu:
                 self.menus[self.current_menu].display_menu()
+
+            if self.toggle_narration_scroll:
+                self.narration_box.narration_scroll()
 
             # Transitions & Effects ---------------------------
 
@@ -209,6 +213,42 @@ class Game(Transitions):
             self.narration_box.remove_narration_box()
 
 
+    def display_narration_scroll(self, text, speed=1, speedup=True, y_offset=0, font_name=None, size=35, color=None, bold=False):
+
+        pygame.event.clear()
+
+        # Font choices
+        if not font_name: font_name = self.narration_box.font_name
+        if not color: color = self.narration_box.color
+        self.narration_box.scroll_font = pygame.font.SysFont(font_name, size, bold)
+        any_text = self.narration_box.scroll_font.render("Anything", 1, "White")
+        self.narration_box.scroll_txt_height = any_text.get_height()
+        self.narration_box.scroll_color = color
+
+        # Speed variables:
+        self.narration_box.speedup_on = speedup  # T/F
+        self.narration_box.speed_slow = speed
+        self.narration_box.speed_fast = 3 * speed
+        self.narration_box.scroll_speed = self.narration_box.speed_slow
+
+        # Start and end locations
+        self.narration_box.y_offset = y_offset  # Start and end heights (y is distance from top and bottom)
+        self.narration_box.start_y = self.win_height + self.narration_box.scroll_txt_height - y_offset
+        self.narration_box.start_y_float = self.narration_box.start_y # Used to keep track of floats
+        self.narration_box.end_y = self.narration_box.start_y
+
+        # Text
+        self.narration_box.scroll_text = text.splitlines()
+
+        self.toggle_narration_scroll = True
+        self.scrolling = True
+
+        while self.scrolling:
+            self.game_loop_input(1)
+
+        self.toggle_narration_scroll = False
+
+
     # Map
     def display_map(self, map, display_only=False, reset_loc=False, set_loc=None):
         self.toggle_map = True
@@ -258,7 +298,7 @@ class Game(Transitions):
         self.map_getting_input = False
 
 
-    # Create new menus ------------------------------------
+    # Create new menus -----------------------------------
     def create_menu(self, name, items: list, x, y, color="Black", size=50, spacing=10, align='left', bold=0, font='georgia'):
         """To be called from scenes.py, make menu with optional background surface"""
         self.menus[name] = Menu(self, name, items, x, y, color, size, spacing, align, bold, font)
@@ -305,7 +345,7 @@ class Game(Transitions):
             self.WIN.blit(portrait.image, (portrait.x + self.x_offset, portrait.y))
 
 
-    # Background -------------------------------------------
+    # Background -----------------------------------------
     def display_background(self):
 
         # If there is a background image:

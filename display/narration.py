@@ -16,7 +16,7 @@ class Narration_Box(Text_Box):
             narration_settings['border_width'], narration_settings['box_transparency'])
 
         # Fonts:
-        self.change_font(narration_settings['font_name'], narration_settings['font_size'], narration_settings['font_color'])
+        self.change_font(narration_settings['font_name'], narration_settings['font_size'], narration_settings['font_color'], narration_settings['bold'])
 
         self.highlight_color = narration_settings['highlight_color']
         self.typing_speed = narration_settings['typing_speed']
@@ -50,7 +50,49 @@ class Narration_Box(Text_Box):
         y_pos = self.surface.surface_rect.y + self.text_y + int(self.text_height * .5)
 
         # Create menu without a surface
-        self.game.create_menu('narration', choices, x_pos, y_pos, 'white', self.text_size, 30, align='horizontal-center')
+        self.game.create_menu('narration', choices, x_pos, y_pos, 'white', self.text_size, 30, align='horizontal-center', bold=self.bold)
+
+
+    def narration_scroll(self):
+        """Called from game loop: adjust y coordinate, render, and blit to screen"""
+
+        y_adjust = False  # True after removing top item from list, need to adjust start_y
+
+        for idx, line in enumerate(self.scroll_text[:]):
+            # Maybe first time in game_engine? to rendered list exists
+            rendered_text = self.scroll_font.render(line, 1, self.scroll_color)
+            text_rect = rendered_text.get_rect(midtop=(self.game.win_width//2, self.start_y + (self.scroll_txt_height * idx)))
+            self.game.WIN.blit(rendered_text, text_rect)
+
+            # If top line is above top of screen:
+            if text_rect.bottom < self.y_offset:
+                self.scroll_text.pop(0)
+                y_adjust = True
+
+            # If line is below bottom of screen, stop drawing lines
+            if text_rect.bottom > self.end_y:
+                break
+
+        # If top line deleted, lower start_y
+        if y_adjust:
+            self.start_y_float += self.scroll_txt_height
+
+        # Check input for speed scrolling
+        if self.speedup_on:
+            keys_pressed = pygame.key.get_pressed()
+            if keys_pressed[pygame.K_RETURN] or keys_pressed[pygame.K_SPACE]:
+                self.scroll_speed = self.speed_fast
+            else:
+                self.scroll_speed = self.speed_slow
+
+        pygame.event.clear()
+
+        # Move all text up
+        self.start_y_float -= self.scroll_speed # keep track of floats
+        self.start_y = int(self.start_y_float)
+
+        if not self.scroll_text:
+            self.game.scrolling = False
 
 
     def display_narration_box(self):

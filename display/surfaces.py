@@ -5,9 +5,9 @@ class Surface:
         """Coordinates and dimensions can be given in integers or a string with percent sign "22.5%" """
         self.WIN = WIN
         self.game = game
+        self.background_color = None
         self.configure(x, y, width, height, bg_color, border_color, border_width, transparency)
         self.image = None
-        # self.font = pygame.font.SysFont('georgia', 50, 0)
         self.display_text_list = [] # list of tuples, pygame text font and rect, for specific texts
         self.hide_surface = False
         self.triangle = False
@@ -52,7 +52,10 @@ class Surface:
     def clear_text(self):
         """Used by both Display_Box and Narration"""
         self.display_text_list = []
-        self.surface.fill(self.background_color)
+        if self.background_color:
+            self.surface.fill(self.background_color)
+        else:
+            self.surface.fill((0,0,0,0))
 
 
     def display_surface(self):

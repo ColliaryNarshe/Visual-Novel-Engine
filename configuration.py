@@ -13,6 +13,7 @@ dialog_settings = {
     'typing_speed': 15,  # Pause between characters, higher is slower
     'font_name': 'Georgia',
     'font_size': 25,
+    'bold': False,
     'name_tag_font_size': 40,
     'name_tag_y': -35,  # 0 aligns with top of box
     'name_tag_x_multiplier': .5,  # Multiplied by width of character portrait.
@@ -46,6 +47,7 @@ narration_settings = {
     'typing_speed': 2,
     'font_name': 'Georgia',
     'font_size': 25,
+    'bold': False,
     'x_txt_padding': 55,
     'y_txt_padding': 30,
     'txt_indentation': 5,
@@ -53,7 +55,7 @@ narration_settings = {
     'bg_color': 'Black',
     'box_transparency': 150, # 0-255
     'border_color': 'Grey',
-    'border_width': 5,
+    'border_width': 4,
     'highlight_color': 'Red'
 }
 

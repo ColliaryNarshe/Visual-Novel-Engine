@@ -24,7 +24,7 @@ class Text_Box:
                         # If pressing enter during typing, display entire text at once
                         for event in pygame.event.get():
                             if event.type == pygame.KEYDOWN:
-                                if event.key == pygame.K_RETURN:
+                                if event.key == pygame.K_RETURN or event.key == pygame.K_SPACE:
                                     text_rect = self._display_without_typing(text)
                                     typing = False
 
@@ -174,7 +174,7 @@ class Text_Box:
         return color, line
 
 
-    def change_font(self, font_name=None, text_size=None, color=None, name_tag=False):
+    def change_font(self, font_name=None, text_size=None, color=None, bold=None, name_tag=False):
         """Renders new font to reset height and width"""
 
         # Check if arguments given, and create the variables
@@ -182,18 +182,20 @@ class Text_Box:
             if font_name: self.font_name = font_name
             if text_size: self.text_size = text_size
             if color: self.color = color
+            if bold != None: self.bold = bold
 
-            self.font = pygame.font.SysFont(self.font_name, self.text_size, 0)
+            self.font = pygame.font.SysFont(self.font_name, self.text_size, self.bold)
 
         # Check name tag data
         else:
             if font_name: self.name_tag_font_name = font_name
             if text_size: self.name_tag_size = text_size
             if color: self.name_tag_color = color
+            if bold != None: self.name_tag_bold = bold
 
-            self.name_tag_font = pygame.font.SysFont(font_name, text_size, 1)
+            self.name_tag_font = pygame.font.SysFont(self.name_tag_font_name, self.name_tag_size, self.name_tag_bold)
 
         # Get height of text and sample width for auto-wrap (don't change text example)
-        any_text = self.font.render("see how it works. The text runs on then continues in a new dialog", 1, "White")
+        any_text = self.font.render("see how it works. The text runs on then continues in a new dialog", self.bold, "White")
         self.text_height = any_text.get_height()
         self.text_width = any_text.get_width() / 65

@@ -48,8 +48,8 @@ class Dialog_Box(Text_Box):
         self.game.menus[self.box_name].add_bg(padding=20, bg_color ='darkblue', border_color='Grey', border_width=self.surface.border_width, transparency=dialog_settings['box_transparency'])
 
         # Fonts for main window & name tag:
-        self.change_font(dialog_settings['font_name'], dialog_settings['font_size'], self.color)
-        self.change_font(dialog_settings['font_name'], dialog_settings['name_tag_font_size'], self.color, name_tag=True)
+        self.change_font(dialog_settings['font_name'], dialog_settings['font_size'], self.color, dialog_settings['bold'])
+        self.change_font(dialog_settings['font_name'], dialog_settings['name_tag_font_size'], self.color, True, name_tag=True)
 
         self.highlight_color = dialog_settings['highlight_color']
         self.typing_speed = dialog_settings['typing_speed']
