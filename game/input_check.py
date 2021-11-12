@@ -23,7 +23,7 @@ class InputCheck():
                 # Count to make holding key while scrolling slower:
                 self.count += 1
                 if self.count >= self.speed:
-                    self.game.sounds['menu_sound'].play()
+                    self.game.play_sfx('menu_sound')
                     self.menu_move_down()
                     self.count = 0
 
@@ -31,7 +31,7 @@ class InputCheck():
                 self.reset_mouse_cursor()
                 self.count += 1
                 if self.count >= self.speed:
-                    self.game.sounds['menu_sound'].play()
+                    self.game.play_sfx('menu_sound')
                     self.menu_move_up()
                     self.count = 0
             else:
@@ -53,9 +53,8 @@ class InputCheck():
             if self.game.toggle_menu:
                 pressed = self.check_menu_mouse(event)
                 if pressed:
-                    self.game.sounds['selected'].play()
+                    self.game.play_sfx('menu_sound')
                     self.game.toggle_menu = False
-                    # return self.game.menu_cursor_loc
                     return self.game.menus[self.game.current_menu].items[self.game.menu_cursor_loc][0]
 
             # Other mouse checks
@@ -97,7 +96,7 @@ class InputCheck():
                             if self.game.menu_cursor_loc == -1:
                                 return
                             else:
-                                self.game.sounds['selected'].play()
+                                self.game.play_sfx('selected')
                                 return self.game.menus[self.game.current_menu].items[self.game.menu_cursor_loc][0]
 
                         return True
@@ -110,7 +109,7 @@ class InputCheck():
             # Change color when hovering:
             if rect.collidepoint(pygame.mouse.get_pos()) and self.game.menus[self.game.current_menu].items[idx][1]:
                 if self.game.menu_cursor_loc != idx:
-                    self.game.sounds['menu_sound'].play()
+                    self.game.play_sfx('menu_sound')
                     self.game.menu_cursor_loc = idx
 
                 if event.type == pygame.MOUSEBUTTONUP:
@@ -142,7 +141,7 @@ class InputCheck():
                     none_active = False
 
                     if not self.game.current_map_locs[idx]['highlighted']:
-                        self.game.sounds['menu_sound'].play()
+                        self.game.play_sfx('menu_sound')
                         self.game.current_map_locs[idx]['highlighted'] = True
 
                     # If mouse is also clicked
@@ -173,7 +172,7 @@ class InputCheck():
         if not current:
             # Set first location
             self.game.current_map_locs[0]['highlighted'] = True
-            self.game.sounds['menu_sound'].play()
+            self.game.play_sfx('menu_sound')
         else:
             # Set next idx in list:
             for loc_index in self.game.current_map_locs:
@@ -187,7 +186,7 @@ class InputCheck():
                     else:
                         self.game.current_map_locs[loc_index +1]['highlighted'] = True
 
-                    self.game.sounds['menu_sound'].play()
+                    self.game.play_sfx('menu_sound')
                     return
 
 
@@ -210,7 +209,7 @@ class InputCheck():
         if not current:
             # Set first location [0] using it's name [0]
             self.game.current_map_locs[last_idx]['highlighted'] = True
-            self.game.sounds['menu_sound'].play()
+            self.game.play_sfx('menu_sound')
         else:
             # Get next idx in list:
             for loc_index in self.game.current_map_locs:
@@ -224,7 +223,7 @@ class InputCheck():
                     else:
                         self.game.current_map_locs[loc_index - 1]['highlighted'] = True
 
-                    self.game.sounds['menu_sound'].play()
+                    self.game.play_sfx('menu_sound')
                     return
 
 

@@ -75,9 +75,9 @@ class Scene1:
 
         # Check dialog menu choice to display different text:
         if self.game.input_return == 'Yes':
-            self.game.display_dialog([["John", 0, "Great! Now my name's changed with no picture. Also the dialog box is up here!"]])
+            self.game.display_dialog([["John", 0, "Great! My name is John and I approve this dialog box location."]])
         elif self.game.input_return == 'No':
-            self.game.display_dialog([['', 0, "Well too bad! Also I have no name or picture."]])
+            self.game.display_dialog([['', 0, "Well too bad!"]])
         elif self.game.input_return == 'Maybe':
             self.game.display_dialog([["Arjen", '', "Geez, make up your mind. Wait, what happened to my headshot?"]])
 

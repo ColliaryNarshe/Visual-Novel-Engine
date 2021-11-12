@@ -54,9 +54,9 @@ def get_maps(game):
 def get_sound_effects(game):
     """Get sounds effects from assets directory, listed in configuration file"""
     for name, loc in sound_effects:
-        game.sounds[name] = pygame.mixer.Sound(game.project_dir + '/' + loc)
-        # Lower volume of all sounds. If you want different levels for each file, can do a check by name
-        game.sounds[name].set_volume(.3)
+        if loc:
+            game.sounds[name] = pygame.mixer.Sound(game.project_dir + '/' + loc)
+            game.sounds[name].set_volume(.3)
 
 
 def get_dialog_images(game):

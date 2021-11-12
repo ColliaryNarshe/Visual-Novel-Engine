@@ -21,7 +21,10 @@ from game.coordinator import Coordinator
 clock = pygame.time.Clock()
 
 class Game(Transitions):
-    def __init__(self, WIN, project_dir, starting_chapter, starting_scene):
+    def __init__(self, project_dir, starting_chapter, starting_scene):
+        pygame.init()
+        WIN = pygame.display.set_mode((1100,700))
+        pygame.display.set_caption("Visual Novel Engine")
         self.WIN = WIN
         self.FPS = 30
         self.win_width = self.WIN.get_width()
@@ -60,13 +63,11 @@ class Game(Transitions):
         self.backdrop_text = []
         self.portraits_to_blit = {}
 
-        self.saves = {}  # Saved games
+        # Saved games:
+        self.saves = {}
+        self.flag_vars = {**flag_variables}  # User variables, added to saved game
 
-        # Used by user to create variables (Used with game saving):
-        self.flag_vars = {**flag_variables}
-
-        # Game flags: toggle game, dialog, narration, menu, map
-        self.game_running = True
+        # Game flags
         self.toggle_dialog = False
         self.toggle_narration = False
         self.toggle_narration_scroll = False
@@ -84,7 +85,7 @@ class Game(Transitions):
 
         self.narration_box = Narration_Box(self)
         self.toggle_coordinator = False
-        self.coordinator = Coordinator(self, self.maps)
+        self.coordinator = Coordinator(self)
 
         self.scenes = {}
 
@@ -165,10 +166,39 @@ class Game(Transitions):
 
 
     # Dialog Box -------------------------------------
-    def display_dialog(self, dialog: list=[], remove=True, set_disabled=[]):
+    def display_dialog(self, dialog: list=[], text_size=None, font_name=None, color=None, bold=None, bg_color=None, transparency=None, border_width=None, remove=True, set_disabled=[]):
         """Gets the list of dialog quotes and feeds them to dialog_box
             set_disabled must be same length as choices list"""
         # [['Arjen', 0, "Dialog"], ['Eilan', 0, "Okay."]] Number is image idx
+
+        # Change font and box if arguments given, saving old values to revert after dialog.
+        font_changed = False
+        box_changed = False
+        if text_size or font_name or color or bold != None:
+            font_changed = True
+            prev_font_name = self.dialog_box.font_name
+            prev_text_size = self.dialog_box.text_size
+            prev_color = self.dialog_box.color
+            prev_bold = self.dialog_box.bold
+            self.dialog_box.change_font(font_name, text_size, color)
+
+        # if new font changes text size, make sure wrap and max_lines is 'auto'
+        if text_size or font_name or bold:
+            txt_wrap = 'auto'
+            max_lines = 'auto'
+            box_changed = True
+        else:
+            txt_wrap = self.dialog_box.wrap_num
+            max_lines = self.dialog_box.max_lines
+
+        if bg_color != None or transparency != None or border_width != None or box_changed:
+            box_changed = True
+            prev_bg_color = self.dialog_box.surface.background_color
+            prev_transparency = self.dialog_box.surface.transparency
+            prev_border = self.dialog_box.surface.border_width
+            prev_txt_wrap = self.dialog_box.wrap_num
+            prev_max_lines = self.dialog_box.max_lines
+            self.dialog_box.config_surface(background_color=bg_color, transparency=transparency, border_width=border_width, txt_wrap=txt_wrap, max_lines=max_lines)
 
         self.toggle_dialog = True
         self.menu_cursor_loc = -1
@@ -181,6 +211,12 @@ class Game(Transitions):
 
         if remove:
             self.dialog_box.remove_dialog_box()
+
+        if font_changed:
+            self.dialog_box.change_font(prev_font_name, prev_text_size, prev_color, prev_bold)
+
+        if box_changed:
+            self.dialog_box.config_surface(background_color=prev_bg_color, transparency=prev_transparency, border_width=prev_border, txt_wrap=prev_txt_wrap, max_lines=prev_max_lines)
 
 
     def create_dialog(self, name, x=None, y=None, width=None, height=None,
@@ -311,6 +347,18 @@ class Game(Transitions):
         # Using a copy of dictionary to remove any animations from dict that go off screen:
         for key, portrait in dict(self.portraits_to_blit).items():
 
+            if portrait.portrait_animating:
+                portrait.new_x -= portrait.x_move
+                portrait.new_y -= portrait.y_move
+                portrait.x = int(portrait.new_x)
+                portrait.y = int(portrait.new_y)
+                portrait.animation_count -= 1
+
+                if portrait.animation_count == 0:
+                    pygame.event.clear()
+                    portrait.x, portrait.y = portrait.x_end, portrait.y_end
+                    portrait.portrait_animating = False
+
             # move_in_left animation, with no game pause:
             if portrait.in_left_animating:
                 portrait.x += portrait.speed
@@ -416,6 +464,13 @@ class Game(Transitions):
             pygame.mixer.music.pause()
         elif unpause:
             pygame.mixer.music.unpause()
+
+
+    def play_sfx(self, name, vol='default'):
+        if name in self.sounds:
+            if vol != 'default':
+                self.sounds[name].set_volume(vol)
+            self.sounds[name].play()
 
 
     # ------

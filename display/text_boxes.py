@@ -8,7 +8,7 @@ class Text_Box:
     def _render_dialog_txt(self, text:list, narration_menu=[]):
         """Add text to self.text one char at a time and display to screen.
            Loops here until text is finished being displayed."""
-
+        
         # Write Text:
         if self.gradual_typing:
             typing = True

@@ -3,13 +3,11 @@ import pygame
 
 class Coordinator:
     """Used from game"""
-    def __init__(self, game, maps):
+    def __init__(self, game):
         self.game = game
-        self.maps = maps
 
     def coordinate(self, name):
-        # from game.input_check import check_input
-        map_loc = self.maps[name].map_loc
+        map_loc = self.game.maps[name].map_loc
         map_image = pygame.image.load(map_loc).convert_alpha()
         map_image = pygame.transform.scale(map_image, (self.game.win_width, self.game.win_height))
 

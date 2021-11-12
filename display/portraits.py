@@ -1,4 +1,5 @@
 import pygame
+from configuration import portrait_settings
 
 class Portrait_Image:
     # Can be used to add any images to the screen, and some options for moving them.
@@ -22,13 +23,14 @@ class Portrait_Image:
         self.in_right_animating = False
         self.out_left_animating = False
         self.out_right_animating = False
+        self.portrait_animating = False
 
-        self.speed = 30
+        self.speed = portrait_settings['animation_speed']
 
 
-    def blit_image(self, x=0, y=0, dialog=''):
-        """Add image to game dictionary to be blit in loop
-           possible coordinates to use besides int are:
+    def blit_image(self, x=0, y=0, dialog=None):
+        """Add image to game dictionary to be blit in loop.
+           Possible coordinates to use besides int are:
            'bottom' 'right' 'center' 'left' 'top'
            dialog can be: 'left' 'right' or 'center' (to put above dialog box)
            """
@@ -46,24 +48,7 @@ class Portrait_Image:
                 self.x = self.right_in
                 return
 
-        if x == 'right':
-            self.x = self.game.win_width - self.width
-        elif x == 'center':
-            self.x = (self.game.win_width // 2) - (self.width // 2)
-        elif x == 'left':
-            self.x = 0
-
-        else:
-            self.x = x
-
-        if y == 'bottom':
-            self.y = self.game.win_height - self.height
-        elif y == 'center':
-            self.y = (self.game.win_height // 2) - (self.height // 2)
-        elif y == 'top':
-            self.y = 0
-        else:
-            self.y = y
+        self.x, self.y = self._convert_x_y_keywords(x, y)
 
 
     def move_in_left(self, y='default', pause=True):
@@ -136,6 +121,66 @@ class Portrait_Image:
             self.out_right_animating = True
 
 
+    def animate(self, start: tuple, end: tuple, pause=True, speed=None):
+        """
+        Blit and animate an image from given position to given position.
+        Possible coordinates to use besides int are:
+        'bottom' 'right' 'center' 'left' 'top'
+        """
+        if speed:
+            self.speed = speed
+
+        if start == 'current':
+            # Add to dict to blit, but don't change x,y
+            self.game.portraits_to_blit[self.name] = self
+        else:
+            self.blit_image(start[0], start[1])
+
+        # Calculate the distance to move:
+        x_end, y_end = self._convert_x_y_keywords(end[0], end[1])
+        x_distance = self.x - x_end
+        y_distance = self.y - y_end
+
+        longest = max(abs(x_distance), abs(y_distance))
+        if x_distance:
+                                # 770
+            x_move = self.speed / (longest / x_distance)
+        else: x_move = 0
+        if y_distance:
+            # -44  = 770      / -350      * 20
+            y_move = self.speed / (longest / y_distance)
+            print(y_move, longest, y_distance, self.speed, x_move)
+        else: y_move = 0
+
+        # Fix for when x_y are different lengths
+        # Start: (770, 0)
+        # End: (0, 350)
+        # x_move, y_move: (20, -44)
+        if pause:
+            new_x = self.x
+            new_y = self.y
+            for num in range(longest // self.speed):
+                new_x -= x_move
+                new_y -= y_move
+                self.x = int(new_x)
+                self.y = int(new_y)
+                self.game.game_loop_input(1)
+            else:
+                pygame.event.clear()
+                self.x, self.y = x_end, y_end
+
+        else:
+            self.animation_count = longest // self.speed
+            self.longest = longest
+            self.x_end = x_end
+            self.y_end = y_end
+            self.x_move = x_move
+            self.y_move = y_move
+            self.new_x = self.x
+            self.new_y = self.y
+            self.portrait_animating = True
+
+
     def upscale(self, percent: int):
         """Change the image size by a percentage"""
         self.width = int(self.width + (self.width * (percent / 100)))
@@ -156,6 +201,7 @@ class Portrait_Image:
                 self.x += self.speed
                 self.game.game_loop_input(1)
                 if self.x > self.right_in:
+                    pygame.event.clear()
                     break
 
         # If image is on right, move to left
@@ -164,4 +210,30 @@ class Portrait_Image:
                 self.x -= self.speed
                 self.game.game_loop_input(1)
                 if self.x < self.left_in:
+                    pygame.event.clear()
                     break
+
+
+    def _convert_x_y_keywords(self, x=None, y=None):
+        if x != None:
+            if x == 'right':
+                x = self.game.win_width - self.width
+            elif x == 'center':
+                x = (self.game.win_width // 2) - (self.width // 2)
+            elif x == 'left':
+                x = 0
+
+        if y != None:
+            if y == 'bottom':
+                y = self.game.win_height - self.height
+            elif y == 'center':
+                y = (self.game.win_height // 2) - (self.height // 2)
+            elif y == 'top':
+                y = 0
+
+        if y != None and x != None:
+            return x, y
+        elif y != None:
+            return y
+        elif x != None:
+            return x

@@ -77,11 +77,15 @@ map_settings = {
     'font': 'Georgia'
 }
 
-# Change the default sound effects here. Can also add more to call during script.
+portrait_settings = {
+    'animation_speed': 20
+}
+
+# Change the default sound effects here, or use None. Additional sounds can also be added to use during script.
 sound_effects = [
     ['menu_sound', "assets/audio/sound_effects/menu.wav"],
-    ['error_sound', "assets/audio/sound_effects/error.mp3"],
-    ['selected', "assets/audio/sound_effects/save.mp3"]
+    ['selected', "assets/audio/sound_effects/save.mp3"],
+    ['error_sound', "assets/audio/sound_effects/error.mp3"]
 ]
 
 # Sheets of 8 images, 144x144 pixels each. List of nums represents which images to use

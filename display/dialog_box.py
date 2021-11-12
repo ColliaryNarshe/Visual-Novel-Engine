@@ -84,6 +84,8 @@ class Dialog_Box(Text_Box):
         self.name = dialog[0]
         if not self.name:
             self.name_on = False
+        else:
+            self.name_on = True
 
         # Check if name in images, if not create name with no images:
         if self.name and not self.name in self.game.dialog_images:
